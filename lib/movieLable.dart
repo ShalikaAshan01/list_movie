@@ -15,7 +15,7 @@ class _MovieLabelState extends State<MovieLabel> {
         height: 137,
         decoration: BoxDecoration(
           border: Border.all(
-              color: Colors.grey[200],
+              color: Colors.grey[800],
               width: 2
           ),
           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -24,7 +24,7 @@ class _MovieLabelState extends State<MovieLabel> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
                   child: Image(
@@ -33,6 +33,7 @@ class _MovieLabelState extends State<MovieLabel> {
               Expanded(
                   flex: 3,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -40,15 +41,18 @@ class _MovieLabelState extends State<MovieLabel> {
                           child: Text("Movie Name will be placesd here",
                           style: TextStyle(
                             fontSize: 20,
-                            color: Colors.white,
+                            color: Colors.grey[200],
                             fontWeight: FontWeight.bold,
                           ),),
                         ),
                       ),
+                      SizedBox(
+                        height: 30,
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Expanded(
 
@@ -72,7 +76,7 @@ class _MovieLabelState extends State<MovieLabel> {
                                      Text(""" Add to \n Watched List""",
 
                                      style: TextStyle(
-                                       color: Colors.grey[200],
+                                       color: Colors.grey[300],
                                          fontWeight: FontWeight.bold
                                      ),)
                                    ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'MovieList.dart';
 import 'movieLable.dart';
 
 void main() => runApp(MaterialApp(
@@ -21,7 +22,7 @@ class _homeState extends State<Home> {
         backgroundColor: Colors.black87,
         elevation: 0.0,
       ),
-      body:  MovieLabel(),
+      body:  MovieList(),
 
     );
   }
