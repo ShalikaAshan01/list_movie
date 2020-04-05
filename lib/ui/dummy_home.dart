@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:list_movie/utils/app_drawer.dart';
 
 class DummyHome extends StatefulWidget {
   @override
@@ -8,9 +9,10 @@ class DummyHome extends StatefulWidget {
 class _DummyHomeState extends State<DummyHome> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text("Replace home"),
+    return AppDrawer(
+      pageName: PageName.home,
+      child: Center(
+        child: Text("home"),
       ),
     );
   }

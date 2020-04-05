@@ -55,4 +55,11 @@ class AuthProvider {
     return _auth.currentUser();
   }
 
+  Future<void> updateDisplayName(String name)async{
+    final user = await getUser();
+    UserUpdateInfo userUpdateInfo = UserUpdateInfo();
+    userUpdateInfo.displayName = name;
+    await user.updateProfile(userUpdateInfo);
+  }
+
 }
