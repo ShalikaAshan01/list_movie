@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:popcorn/models/movie_model.dart';
 import 'package:popcorn/models/popular_movie_model.dart';

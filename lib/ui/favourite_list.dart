@@ -27,7 +27,6 @@ class _FavouriteListState extends State<FavouriteList> {
   Future _fetchListFromFirebase()async{
     var fav = await _favouriteProvider.getFavouriteList();
     fav = fav.cast<int>();
-    List<MovieModel> movies = List();
     fav.forEach((id) async{
       MovieModel movie = await MovieProvider().getModvie(id);
       setState(() {

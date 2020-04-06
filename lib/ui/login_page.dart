@@ -184,7 +184,6 @@ class _LoginPageState extends State<LoginPage> {
       try{
         AuthProvider _auth = AuthProvider();
         await _auth.loginWithEmail(email, password);
-        //TODO :add home
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context)=>HomePage()
         ));

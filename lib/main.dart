@@ -42,7 +42,6 @@ class Root extends StatelessWidget {
 
     AuthProvider authProvider = AuthProvider();
     authProvider.getUser().then((value) {
-      //TODO:add home
       if(value == null)
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginPage()));
       else
