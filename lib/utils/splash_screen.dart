@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:list_movie/utils/loading_widget.dart';
+import 'package:popcorn/utils/loading_widget.dart';
 
 import 'logo.dart';
 ///

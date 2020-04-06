@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:popcorn/models/popular_movie_model.dart';
-import 'package:popcorn/utils/loading_widget.dart';
-import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/ui/movie_lable.dart';
 
@@ -12,7 +9,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _movieProvider = MovieProvider();
   @override
   Widget build(BuildContext context) {
     return AppDrawer(
@@ -41,30 +37,25 @@ class _HomePageState extends State<HomePage> {
                   ],
                 )
             ),
-            Container(
-              child: FutureBuilder(
-                future: _movieProvider.fetchPopularMovies(2),
-                builder: (context,snapshot){
-                  if(!snapshot.hasData)
-                    return LoadingWidget();
-                  PopularMovieResult result = snapshot.data;
-                  List<PopularMovieInformation> list = result.movieInformations;
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: list.length,itemBuilder: (context,index){
-                    final id = "${list[index].id}";
-                    final name = list[index].title;
-                    final poster = list[index].posterPath;
-                    return MovieLabel(id: id,movieName: name,poster: poster,);
-                  },);
-                },
-              ),
-            )
-
+            MovieLabel(),
+            MovieLabel(),
+            MovieLabel(),
+            MovieLabel(),
           ],
         ),
       ),
     );
+  }
+}
+
+class MovieListItem extends StatefulWidget {
+  @override
+  _MovieListItemState createState() => _MovieListItemState();
+}
+
+class _MovieListItemState extends State<MovieListItem> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

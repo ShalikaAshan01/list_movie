@@ -63,7 +63,7 @@ class MyInheritedData extends InheritedWidget {
         super(key: key, child: child);
 
   static MyInheritedData of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<MyInheritedData>();;
+    return context.dependOnInheritedWidgetOfExactType<MyInheritedData>();
   }
 
 

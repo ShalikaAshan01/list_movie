@@ -6,10 +6,10 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:list_movie/controllers/auth_provider.dart';
-import 'package:list_movie/ui/MyInheritedWidget.dart';
-import 'package:list_movie/ui/dummy_home.dart';
-import 'package:list_movie/ui/favourite_list.dart';
+import 'package:popcorn/controllers/auth_provider.dart';
+import 'package:popcorn/ui/MyInheritedWidget.dart';
+import 'package:popcorn/ui/favourite_list.dart';
+import 'package:popcorn/ui/home_page.dart';
 
 class AppDrawer extends StatefulWidget {
   final Widget child;
@@ -75,7 +75,7 @@ class _AppDrawerState extends State<AppDrawer> {
         top: _collapsed ? 0 : 0.2 * height,
         bottom: _collapsed ? 0 : 0.2 * width,
         left: _collapsed ? 0 : 0.6 * width,
-        right: _collapsed ? 0 : -0.4 * width,
+        right: _collapsed ? 0 : -0.6 * width,
         duration: _duration,
         child: GestureDetector(
           onHorizontalDragUpdate: (details) {
@@ -240,7 +240,7 @@ class _AppDrawerState extends State<AppDrawer> {
             height: 30,
           ),
           ListTile(
-            onTap: ()=>_navigate(PageName.home,DummyHome()),
+            onTap: ()=>_navigate(PageName.home,HomePage()),
             title: Text(
               "Home",
               style: selectedHome ? activeText : deactiveText,

@@ -1,7 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:list_movie/utils/app_drawer.dart';
-import 'package:list_movie/utils/loading_widget.dart';
+import 'package:popcorn/controllers/favourite_provider.dart';
+import 'package:popcorn/controllers/movie_provider.dart';
+import 'package:popcorn/models/movie_model.dart';
+import 'package:popcorn/utils/app_drawer.dart';
+import 'package:popcorn/utils/loading_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class FavouriteList extends StatefulWidget {
   @override
@@ -9,8 +13,31 @@ class FavouriteList extends StatefulWidget {
 }
 
 class _FavouriteListState extends State<FavouriteList> {
-  List _list = List<int>.generate(100, (index) => index);
+  List<MovieModel> _movieList = List();
   final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+  FavouriteProvider _favouriteProvider = FavouriteProvider();
+  bool _loading = true;
+  @override
+  void initState() {
+    super.initState();
+    _fetchListFromFirebase();
+  }
+
+  ///fetch favourite list ids from firebase
+  Future _fetchListFromFirebase()async{
+    var fav = await _favouriteProvider.getFavouriteList();
+    fav = fav.cast<int>();
+    List<MovieModel> movies = List();
+    fav.forEach((id) async{
+      MovieModel movie = await MovieProvider().getModvie(id);
+      setState(() {
+        _movieList.add(movie);
+      });
+    });
+    setState(() {
+      _loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,21 +53,40 @@ class _FavouriteListState extends State<FavouriteList> {
 
   ///This function will build the favourite list
   Widget _buildList() {
+    if(_loading)
+      return _skeletonWidget();
+    if(_movieList == null || _movieList.length==0)
+      return _skeletonWidget();
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-      child: ListView.builder(
-        itemCount: _list.length,
-          itemBuilder: (context,index)=>_favouriteItem(_list[index])),
+      child: SingleChildScrollView(
+        child: ListView.builder(
+          reverse: true,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: _movieList.length,
+            itemBuilder: (context,index)=>_favouriteItem(index)),
+      ),
     );
   }
 
+  ///
+  /// This is favourite items widget
   Widget _favouriteItem(int index) {
-    final imageURL = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ1bDkDLq-_bteASakhnC1XYwlkErFuqcof7KMhFpRwVhCTh1Vo";
-    final name = "Captain Marvel $index";
-    final category1 = "Action";
-    final category2 = "Science Fiction";
-    final runtime = "2h 2min";
-    final rating = "8.5";
+    final movie = _movieList[index];
+    final imageURL = "https://image.tmdb.org/t/p/w500/${movie.posterPath}";
+    final name = movie.originalTitle;
+    String category1 = "N/A";
+    if(movie.genres.length>0)
+      category1 = movie.genres[0].name;
+    String category2 = "";
+    if(movie.genres.length>1) {
+      category2 = movie.genres[1].name;
+    }
+    String runtime = "${movie.runtime} minutes";
+    if(runtime.toLowerCase().contains("null"))
+      runtime = "N/A";
+    final rating = movie.voteAverage;
 
     final width = MediaQuery.of(context).size.width;
     final textTheme = Theme.of(context).textTheme;
@@ -54,13 +100,13 @@ class _FavouriteListState extends State<FavouriteList> {
       imdbColor = Colors.grey;
     }
 
-    final nameStyle = textTheme.headline6.copyWith(fontWeight: FontWeight.bold);
-    final categoryStyle = TextStyle(fontSize: width * 0.042,fontWeight: FontWeight.bold,color: categoryColor);
+    final nameStyle = textTheme.headline6.copyWith(fontWeight: FontWeight.bold,fontSize: width * 0.042);
+    final categoryStyle = TextStyle(fontSize: width * 0.038,fontWeight: FontWeight.bold,color: categoryColor);
     final imdbStyle = TextStyle(fontSize: width * 0.036,fontWeight: FontWeight.bold,color: imdbColor);
 
     return Dismissible(
       direction: DismissDirection.endToStart,
-      key: ValueKey(index),
+      key: ValueKey(movie.id),
       onDismissed: (direction){
         if(direction == DismissDirection.endToStart){
           _deleteMovie(name, index);
@@ -89,7 +135,7 @@ class _FavouriteListState extends State<FavouriteList> {
               children: <Widget>[
                 // image
                 Container(
-                  height: imageSize,
+                  height: imageSize * 1.2,
                   width: imageSize,
                   child: CachedNetworkImage(
                     imageUrl: imageURL,
@@ -161,9 +207,11 @@ class _FavouriteListState extends State<FavouriteList> {
   }
 
   //this method will remove the item from favourite list
-  void _deleteMovie(String name, int id){
+  void _deleteMovie(String name, int index){
+    MovieModel temp = _movieList[index];
+    _favouriteProvider.addOrRemoveFavourite(temp.id);
     setState(() {
-      _list.removeAt(id);
+      _movieList.removeAt(index);
     });
     final snackBar = SnackBar(content: Row(
       children: <Widget>[
@@ -171,8 +219,9 @@ class _FavouriteListState extends State<FavouriteList> {
         Expanded(
           child: MaterialButton(
             onPressed: (){
+              _favouriteProvider.addOrRemoveFavourite(temp.id);
               setState(() {
-                _list.add(id);
+                _movieList.add(temp);
               });
               _scaffoldGlobalKey.currentState.hideCurrentSnackBar();
             },
@@ -184,5 +233,60 @@ class _FavouriteListState extends State<FavouriteList> {
     _scaffoldGlobalKey.currentState.showSnackBar(snackBar);
   }
 
-  _saveToWatchList(String name, int index) {}
+
+  ///This method will add movie to watchlist
+  _saveToWatchList(String name, int index) {print("hi");}
+
+
+  //this is loading widget for the favourite page
+  Widget _skeletonWidget() {
+    final width = MediaQuery.of(context).size.width;
+
+    return ListView.builder(itemCount: 10,
+      itemBuilder: (context,index){
+        return Container(
+            padding: EdgeInsets.all(8.0),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[400],
+              highlightColor: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: width *0.2,
+                    height: width *0.2,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 10,),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 10,
+                          width: width * 0.7,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+        );
+      },
+    );
+  }
 }

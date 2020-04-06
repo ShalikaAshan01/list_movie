@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:list_movie/controllers/auth_provider.dart';
-import 'package:list_movie/ui/dummy_home.dart';
-import 'package:list_movie/utils/logo.dart';
+import 'package:popcorn/controllers/auth_provider.dart';
+import 'package:popcorn/ui/home_page.dart';
+import 'package:popcorn/utils/logo.dart';
 
-class LogiPage extends StatefulWidget {
+class LoginPage extends StatefulWidget {
   @override
-  _LogiPageState createState() => _LogiPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LogiPageState extends State<LogiPage> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _loading = false;
@@ -186,7 +186,7 @@ class _LogiPageState extends State<LogiPage> {
         await _auth.loginWithEmail(email, password);
         //TODO :add home
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context)=>DummyHome()
+          builder: (context)=>HomePage()
         ));
       }catch(error){
         String errorMessage;
