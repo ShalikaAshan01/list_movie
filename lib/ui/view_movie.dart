@@ -3,9 +3,9 @@ import 'package:popcorn/models/movie_model.dart';
 
 class ViewMovie extends StatefulWidget {
   final int movieId;
-  final MovieModel movieModel;
+  final MovieModel movie;
 
-  const ViewMovie({Key key,@required this.movieId, this.movieModel}) : super(key: key);
+  const ViewMovie({Key key,this.movieId, this.movie}) : assert(movie != null || movieId !=null);
   @override
   _ViewMovieState createState() => _ViewMovieState();
 }
@@ -13,6 +13,10 @@ class ViewMovie extends StatefulWidget {
 class _ViewMovieState extends State<ViewMovie> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Center(
+        child: Text("hi"),
+      ),
+    );
   }
 }

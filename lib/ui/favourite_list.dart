@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:popcorn/controllers/favourite_provider.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/models/movie_model.dart';
+import 'package:popcorn/ui/view_movie.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/utils/loading_widget.dart';
 import 'package:shimmer/shimmer.dart';
@@ -103,104 +104,109 @@ class _FavouriteListState extends State<FavouriteList> {
     final categoryStyle = TextStyle(fontSize: width * 0.038,fontWeight: FontWeight.bold,color: categoryColor);
     final imdbStyle = TextStyle(fontSize: width * 0.036,fontWeight: FontWeight.bold,color: imdbColor);
 
-    return Dismissible(
-      direction: DismissDirection.endToStart,
-      key: ValueKey(movie.id),
-      onDismissed: (direction){
-        if(direction == DismissDirection.endToStart){
-          _deleteMovie(name, index);
-        }
+    return InkWell(
+      onTap: (){
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ViewMovie(movie: movie,)));
       },
-      background: Container(
-        decoration: BoxDecoration(
-            color: Colors.redAccent,
-          borderRadius: BorderRadius.circular(10)
+      child: Dismissible(
+        direction: DismissDirection.endToStart,
+        key: ValueKey(movie.id),
+        onDismissed: (direction){
+          if(direction == DismissDirection.endToStart){
+            _deleteMovie(name, index);
+          }
+        },
+        background: Container(
+          decoration: BoxDecoration(
+              color: Colors.redAccent,
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Icon(Icons.delete,color: Colors.white,),
+              SizedBox(width: 5,),
+              Text("Remove",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.right,),
+              SizedBox(width: 20,)
+            ],
+          ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Stack(
           children: <Widget>[
-            Icon(Icons.delete,color: Colors.white,),
-            SizedBox(width: 5,),
-            Text("Remove",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),textAlign: TextAlign.right,),
-            SizedBox(width: 20,)
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: Row(
+                children: <Widget>[
+                  // image
+                  Container(
+                    height: imageSize * 1.2,
+                    width: imageSize,
+                    child: CachedNetworkImage(
+                      imageUrl: imageURL,
+                      alignment: Alignment.center,
+                      imageBuilder: (context, image) {
+                        return Container(
+                          child: Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: image, fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          ),
+                        );
+                      },
+                      placeholder: (context, url) => Container(
+                        child: LoadingWidget(
+                          size: 25,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                          child: Icon(
+                            Icons.broken_image,
+                            color: brokenColor,
+                          )),
+                    ),
+                  ),
+                  SizedBox(width: 15,),
+                  //Content
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(name,style: nameStyle,),
+                        SizedBox(height: 5,),
+                        Text("$category1| $category2  $runtime",style: categoryStyle,),
+                        SizedBox(height: 5,),
+                        Text("IMDB $rating",style: imdbStyle,),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            // buttons
+            Positioned(
+              bottom: 5,
+              right: 5,
+              child: Row(
+                children: <Widget>[
+                  InkWell(
+                    child: Icon(Icons.playlist_add,color: imdbColor,), onTap: () => _saveToWatchList(name,index),
+                  ),
+                  InkWell(
+                    child: Icon(Icons.delete,color: imdbColor,), onTap: () => _deleteMovie(name,index),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-      ),
-      child: Stack(
-        children: <Widget>[
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              children: <Widget>[
-                // image
-                Container(
-                  height: imageSize * 1.2,
-                  width: imageSize,
-                  child: CachedNetworkImage(
-                    imageUrl: imageURL,
-                    alignment: Alignment.center,
-                    imageBuilder: (context, image) {
-                      return Container(
-                        child: Card(
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: image, fit: BoxFit.cover),
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                        ),
-                      );
-                    },
-                    placeholder: (context, url) => Container(
-                      child: LoadingWidget(
-                        size: 25,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                        child: Icon(
-                          Icons.broken_image,
-                          color: brokenColor,
-                        )),
-                  ),
-                ),
-                SizedBox(width: 15,),
-                //Content
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(name,style: nameStyle,),
-                      SizedBox(height: 5,),
-                      Text("$category1| $category2  $runtime",style: categoryStyle,),
-                      SizedBox(height: 5,),
-                      Text("IMDB $rating",style: imdbStyle,),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          // buttons
-          Positioned(
-            bottom: 5,
-            right: 5,
-            child: Row(
-              children: <Widget>[
-                InkWell(
-                  child: Icon(Icons.playlist_add,color: imdbColor,), onTap: () => _saveToWatchList(name,index),
-                ),
-                InkWell(
-                  child: Icon(Icons.delete,color: imdbColor,), onTap: () => _deleteMovie(name,index),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
