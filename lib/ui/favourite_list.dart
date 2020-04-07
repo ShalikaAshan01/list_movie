@@ -106,7 +106,7 @@ class _FavouriteListState extends State<FavouriteList> {
 
     return InkWell(
       onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ViewMovie(movie: movie,)));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ViewMovie(movieId: movie.id,)));
       },
       child: Dismissible(
         direction: DismissDirection.endToStart,
@@ -220,18 +220,18 @@ class _FavouriteListState extends State<FavouriteList> {
     });
     final snackBar = SnackBar(content: Row(
       children: <Widget>[
-        Text('$name is removed from the favourite list'),
         Expanded(
-          child: MaterialButton(
-            onPressed: (){
-              _favouriteProvider.addOrRemoveFavourite(temp.id);
-              setState(() {
-                _movieList.add(temp);
-              });
-              _scaffoldGlobalKey.currentState.hideCurrentSnackBar();
-            },
-            child: Text("Undo",style: TextStyle(color: Colors.pinkAccent),),
-          ),
+          child: Text('$name is removed from the favourite list'),
+        ),
+        MaterialButton(
+          onPressed: (){
+            _favouriteProvider.addOrRemoveFavourite(temp.id);
+            setState(() {
+              _movieList.add(temp);
+            });
+            _scaffoldGlobalKey.currentState.hideCurrentSnackBar();
+          },
+          child: Text("Undo",style: TextStyle(color: Colors.pinkAccent),),
         )
       ],
     ));

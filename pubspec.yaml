@@ -52,6 +52,9 @@ flutter:
   assets:
      - assets/images/logoWhite.png
      - assets/images/logoBlack.png
+     - assets/images/male_placeholder.png
+     - assets/images/female_placeholder.png
+     - assets/images/movie_placeholder.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

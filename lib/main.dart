@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PoP Corn',
 themeMode: MyInheritedData.of(context).darkMode? ThemeMode.dark: ThemeMode.light,
-theme: MyInheritedData.of(context).darkMode?ThemeData.dark():ThemeData.light(),
+theme: MyInheritedData.of(context).darkMode?ThemeData.dark():ThemeData.light().copyWith(backgroundColor: Colors.white),
 //      theme: ThemeData(
 //        brightness: Brightness.light,
 //        primarySwatch: Colors.blue,
