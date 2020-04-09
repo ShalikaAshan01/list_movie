@@ -28,9 +28,6 @@ packages:
       name: boolean_selector
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.0.5"
-=======
     version: "2.0.0"
   cached_network_image:
     dependency: "direct main"
@@ -39,7 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
->>>>>>> 42b3327c6a1b09bb438daa88e06ca00dd4f97bd1
   carousel_pro:
     dependency: "direct main"
     description:
@@ -116,7 +112,7 @@ packages:
       name: firebase
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.2.1"
+    version: "7.3.0"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -237,8 +233,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.4"
-<<<<<<< HEAD
-=======
   path_provider:
     dependency: transitive
     description:
@@ -260,25 +254,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
->>>>>>> 42b3327c6a1b09bb438daa88e06ca00dd4f97bd1
   pedantic:
     dependency: transitive
     description:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.8.0+1"
-=======
     version: "1.9.0"
->>>>>>> 42b3327c6a1b09bb438daa88e06ca00dd4f97bd1
   petitparser:
     dependency: transitive
     description:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.0"
+    version: "3.0.2"
   platform:
     dependency: transitive
     description:
@@ -402,7 +391,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.11"
+    version: "0.2.15"
   typed_data:
     dependency: transitive
     description:
@@ -430,12 +419,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.6.1"
+    version: "3.7.0"
 sdks:
-<<<<<<< HEAD
-  dart: ">=2.4.0 <3.0.0"
-  flutter: ">=1.2.0 <2.0.0"
-=======
   dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.4 <2.0.0"
->>>>>>> 42b3327c6a1b09bb438daa88e06ca00dd4f97bd1
