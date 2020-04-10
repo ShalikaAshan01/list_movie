@@ -17,13 +17,13 @@ void main() {
   });
 }
 
-class _homeState extends State<Home> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PoP Corn',
-themeMode: MyInheritedData.of(context).darkMode? ThemeMode.dark: ThemeMode.light,
-theme: MyInheritedData.of(context).darkMode?ThemeData.dark():ThemeData.light().copyWith(backgroundColor: Colors.white),
+      themeMode: MyInheritedData.of(context).darkMode? ThemeMode.dark: ThemeMode.light,
+      theme: MyInheritedData.of(context).darkMode?ThemeData.dark():ThemeData.light().copyWith(backgroundColor: Colors.white),
 //      theme: ThemeData(
 //        brightness: Brightness.light,
 //        primarySwatch: Colors.blue,
@@ -50,4 +50,3 @@ class Root extends StatelessWidget {
     return SplashScreen();
   }
 }
-

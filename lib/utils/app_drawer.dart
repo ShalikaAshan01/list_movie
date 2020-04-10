@@ -10,6 +10,7 @@ import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/ui/MyInheritedWidget.dart';
 import 'package:popcorn/ui/favourite_list.dart';
 import 'package:popcorn/ui/home_page.dart';
+import 'package:popcorn/ui/watched_list.dart';
 
 class AppDrawer extends StatefulWidget {
   final Widget child;
@@ -251,6 +252,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     : deactiveColor),
           ),
           ListTile(
+            onTap: ()=>_navigate(PageName.watchList, watchedList()),
             title: Text("Watch list",
                 style: selectedWatchList
                     ? activeText
