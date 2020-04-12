@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "83104149812",
+    "firebase_url": "https://listmovie-a0154.firebaseio.com",
+    "project_id": "listmovie-a0154",
+    "storage_bucket": "listmovie-a0154.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83104149812:android:c2b79a9352e335258af561",
+        "android_client_info": {
+          "package_name": "com.example.list_movie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "83104149812-ejgf56ce918kombm7mlifd1fkk6ollt6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.list_movie",
+            "certificate_hash": "c594296c7574551ed8ead5f88300c45c605e6c3e"
+          }
+        },
+        {
+          "client_id": "83104149812-15t2mqp1e01aj4ijdarf50b6q0g69qi9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9OYW26l1HlwF6-GyWsRvIxoHNsBsezHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83104149812-15t2mqp1e01aj4ijdarf50b6q0g69qi9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
