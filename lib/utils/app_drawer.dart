@@ -92,54 +92,57 @@ class _AppDrawerState extends State<AppDrawer> {
                 });
             }
           },
-          child: Material(
-              animationDuration: _duration,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(_collapsed ? 0 : 20)),
-              elevation: 10,
-              child: Column(
-                children: <Widget>[
-                  AnimatedContainer(
-                    duration: _duration,
-                    padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
-                    height: _collapsed ? height * 0.1 : (height * 0.07),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(_collapsed ? 0 : 20)),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: width * 0.04,
-                        ),
-                        InkWell(
-                            onTap: () {
-                              setState(() {
-                                _collapsed = !_collapsed;
-                              });
-                            },
-                            child: Icon(
-                              Icons.menu,
-                              size: width * 0.065,
-                              color: Colors.white70,
-                            )),
-                        Expanded(
-                          child: Text(
-                            widget.title,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: width * 0.05,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700),
+          child: AbsorbPointer(
+            absorbing: !_collapsed,
+            child: Material(
+                animationDuration: _duration,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(_collapsed ? 0 : 20)),
+                elevation: 10,
+                child: Column(
+                  children: <Widget>[
+                    AnimatedContainer(
+                      duration: _duration,
+                      padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
+                      height: _collapsed ? height * 0.1 : (height * 0.07),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(_collapsed ? 0 : 20)),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          SizedBox(
+                            width: width * 0.04,
                           ),
-                        )
-                      ],
+                          InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _collapsed = !_collapsed;
+                                });
+                              },
+                              child: Icon(
+                                Icons.menu,
+                                size: width * 0.065,
+                                color: Colors.white70,
+                              )),
+                          Expanded(
+                            child: Text(
+                              widget.title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: width * 0.05,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(child: widget.child),
-                ],
-              )),
+                    Expanded(child: widget.child),
+                  ],
+                )),
+          ),
         ));
   }
 

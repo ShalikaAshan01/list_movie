@@ -322,7 +322,7 @@ class _ViewMovieState extends State<ViewMovie> {
                     width: 100,
                     fit: BoxFit.cover,
                     placeholder: AssetImage(placeholder),
-                    image: NetworkImage("https://image.tmdb.org/t/p/w500/${cast.profilePath}")
+                    image: NetworkImage("https://image.tmdb.org/t/p/w780/${cast.profilePath}")
                 ),
               )),
           Padding(

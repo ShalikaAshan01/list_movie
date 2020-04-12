@@ -6,6 +6,7 @@ import 'package:popcorn/utils/loading_widget.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/ui/movie_lable.dart';
+import 'package:shimmer/shimmer.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                 future: _movieProvider.fetchPopularMovies(2),
                 builder: (context,snapshot){
                   if(!snapshot.hasData)
-                    return LoadingWidget();
+                    return _skeletonWidget();
                   PopularMovieResult result = snapshot.data;
                   List<PopularMovieInformation> list = result.movieInformations;
                   return ListView.builder(
@@ -79,6 +80,61 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+  //this is loading widget for the favourite page
+  Widget _skeletonWidget() {
+    final width = MediaQuery.of(context).size.width;
+
+    return ListView.builder(itemCount: 10,
+
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context,index){
+
+        return Container(
+            padding: EdgeInsets.all(8.0),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[400],
+              highlightColor: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: width *0.2,
+                    height: width *0.2,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 10,),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 10,
+                          width: width * 0.7,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+        );
+      },
     );
   }
 }
