@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:popcorn/ui/movie_lable.dart';
+import 'package:popcorn/ui/view_movie.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
@@ -55,7 +56,7 @@ class _watchedListState extends State<watchedList> {
 //                    physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (_, int index) {
                         print(snapshot.data.documents[index]);
-                        final id = snapshot.data.documents[index]['id'];
+                        final id = snapshot.data.documents[index]['movieId'].toString();
                         final name = snapshot.data.documents[index]['title'];
                         final poster = snapshot.data.documents[index]['poster'];
                         final vote = snapshot.data.documents[index]['vote'];

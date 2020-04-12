@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/models/cast_model.dart';
+import 'package:popcorn/models/firebase_movie_model.dart';
 import 'package:popcorn/models/movie_model.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
 
@@ -42,5 +45,18 @@ class MovieProvider{
     final data = response.data;
     final movieResult = PopularMovieResult.fromJson(data);
     return movieResult;
+  }
+  Future<FirebaseMovieModel> fetchMovieFromFirebase(int movieId)async{
+    AuthProvider _auth = AuthProvider();
+    Firestore _firestore = Firestore.instance;
+    final user = await _auth.getUser();
+    final list = await _firestore
+        .collection('user')
+        .document(user.uid)
+        .collection("Movies").where('movieId', isEqualTo: movieId).getDocuments();
+    if(list.documents.length == 0)
+      return null;
+    FirebaseMovieModel movie = FirebaseMovieModel.fromMap(list.documents.first.data);
+    return movie;
   }
 }

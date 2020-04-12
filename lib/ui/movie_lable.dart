@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:popcorn/controllers/favourite_provider.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:popcorn/ui/view_movie.dart';
 
 class MovieLabel extends StatefulWidget {
   final String movieName;
@@ -27,7 +28,6 @@ class MovieLabel extends StatefulWidget {
 }
 
 class _MovieLabelState extends State<MovieLabel> {
-  WatchedProvider _watchedProvider = new WatchedProvider();
 
 //  deleteLable(){
 //    widget.delete =
@@ -45,107 +45,110 @@ class _MovieLabelState extends State<MovieLabel> {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-      child: Container(
-        //TODO: overflow from here
-        height: MediaQuery.of(context).size.height * 0.2,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[800], width: 2),
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: Image(
-                  image: NetworkImage(
-                      "https://image.tmdb.org/t/p/w500/${widget.poster}"),
+      child: InkWell(
+        onTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ViewMovie(movieId: int.parse(widget.id),)));
+        },
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.2,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[800], width: 2),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  child: Image(
+                    image: NetworkImage(
+                        "https://image.tmdb.org/t/p/w500/${widget.poster}"),
+                  ),
                 ),
-              ),
-              Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
 //                        Expanded(
 //                          child:
-                        Spacer(),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    movieName,
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      color: nameColor,
-                                      fontWeight: FontWeight.bold,
+                          Spacer(),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      movieName,
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        color: nameColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
 //                        ),Expanded(
 //                          child:
-                                  Text(
-                                    widget.release,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: releaseColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Visibility(
-                              visible: widget.favOrWatched,
-                              child: Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    widget.delete(widget.id);
-                                    setState(() {
-
-                                    });
-//                                  _watchedProvider.addToWatchedMovies(widget.movieName, widget.id, widget.poster, widget.vote, widget.release);
-                                    },
-                                  child: Row(
-                                    // Replace with a Row for horizontal icon + text
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.delete,
-                                        size: 40,
-                                        color: Colors.grey[200],
+                                    Text(
+                                      widget.release,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: releaseColor,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Visibility(
+                                visible: widget.favOrWatched,
+                                child: Expanded(
+                                  flex: 1,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      widget.delete(widget.id);
+                                      setState(() {
+
+                                      });
+//                                  _watchedProvider.addToWatchedMovies(widget.movieName, widget.id, widget.poster, widget.vote, widget.release);
+                                      },
+                                    child: Row(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.delete,
+                                          size: 40,
+                                          color: Colors.grey[200],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Spacer(),
-                        RatingBar(
-                          initialRating: widget.vote / 2,
-                          direction: Axis.horizontal,
-                          ignoreGestures: true,
-                          itemCount: 5,
-                          itemPadding: EdgeInsets.symmetric(horizontal: 3.0),
-                          itemBuilder: (context, _) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
+                            ],
                           ),
+                          Spacer(),
+                          RatingBar(
+                            initialRating: widget.vote / 2,
+                            direction: Axis.horizontal,
+                            ignoreGestures: true,
+                            itemCount: 5,
+                            itemPadding: EdgeInsets.symmetric(horizontal: 3.0),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
 //                      onRatingUpdate: (rating) {
 //                        print(rating);
 //                      },
-                        ),
+                          ),
 
 
 //                        Padding(
@@ -217,19 +220,15 @@ class _MovieLabelState extends State<MovieLabel> {
 //                            ],
 //                          ),
 //                        ),
-                      ],
-                    ),
-                  )),
+                        ],
+                      ),
+                    )),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  void _addOrRemoveFavourite() {
-    FavouriteProvider favouriteProvider = FavouriteProvider();
-    favouriteProvider.addOrRemoveFavourite(int.parse(widget.id));
   }
 }

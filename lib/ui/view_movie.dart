@@ -2,8 +2,11 @@ import 'dart:io' show Platform;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:popcorn/controllers/favourite_provider.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
+import 'package:popcorn/controllers/watched_provider.dart';
 import 'package:popcorn/models/cast_model.dart';
+import 'package:popcorn/models/firebase_movie_model.dart';
 import 'package:popcorn/models/movie_model.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
 import 'package:popcorn/utils/loading_widget.dart';
@@ -23,6 +26,8 @@ class _ViewMovieState extends State<ViewMovie> {
   MovieProvider _movieProvider = MovieProvider();
   List<CastModel> _castList = List();
   List<PopularMovieInformation> _recommendationList = List();
+  bool _watched = false;
+  bool _favourite = false;
 
   @override
   void initState() {
@@ -36,28 +41,43 @@ class _ViewMovieState extends State<ViewMovie> {
     MovieModel movieModel = await _getMovie();
     List<CastModel> castList = await _getCastList();
     List<PopularMovieInformation> recommendationList = await _getRecommendation();
+    FirebaseMovieModel fmodel = await _getFirebase(movieModel.id);
+    bool watched = false;
+    bool favourite = false;
+
+    if(fmodel != null){
+      favourite = fmodel.favourite;
+      watched = fmodel.watched;
+    }
     setState(() {
       _loading = false;
       _movie = movieModel;
       _castList = castList;
       _recommendationList = recommendationList;
+      _favourite = favourite;
+      _watched = watched;
     });
   }
 
-  /// Fetch movie using movie provider
+  /// Fetch movie from api using movie provider
   Future<MovieModel> _getMovie() {
     return _movieProvider.getModvie(widget.movieId);
   }
 
-  /// get cast list related to the movie
+  /// get cast list related to the movie. This information in get using the api
   Future<List<CastModel>> _getCastList() {
     return _movieProvider.getCastList(widget.movieId);
   }
 
-  ///fetch movie recommendations related to the movie
+  ///fetch movie recommendations related to the movie. This information in get using the api
   Future<List<PopularMovieInformation>> _getRecommendation()async{
     final result =await _movieProvider.getMovieRecommendations(widget.movieId);
     return result.movieInformations;
+  }
+
+  //get movie informations from firebase, if the movie is favourite or watched
+  Future<FirebaseMovieModel> _getFirebase(int id){
+    return _movieProvider.fetchMovieFromFirebase(id);
   }
 
   @override
@@ -99,7 +119,7 @@ class _ViewMovieState extends State<ViewMovie> {
                     margin: EdgeInsets.only(
                         top: height * 0.25, right: width * 0.03),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () =>_addToFavourite(),
                       child: Material(
                         color: Colors.white,
                           elevation: 10,
@@ -107,8 +127,8 @@ class _ViewMovieState extends State<ViewMovie> {
                             borderRadius: BorderRadius.circular(100)
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Icon(Icons.favorite,color: Colors.pinkAccent,size: 30,),
+                            padding: const EdgeInsets.all(10.0),
+                            child: Icon(_favourite?Icons.favorite:Icons.favorite_border,color: Colors.pinkAccent,size: 30,),
                           )),
                     ),
                   ),
@@ -150,8 +170,8 @@ class _ViewMovieState extends State<ViewMovie> {
                   child: _categoryList(),
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.playlist_add),
+                  onPressed: () => _handleWatchlist(),
+                  icon: Icon(_watched?Icons.playlist_add_check:Icons.playlist_add),
                 )
               ],
             ),
@@ -368,5 +388,59 @@ class _ViewMovieState extends State<ViewMovie> {
   /// get theme mode
   bool _isDarkMode() {
     return Theme.of(context).brightness == Brightness.dark;
+  }
+
+  ///add movie to the watchlist
+  Future<void> _handleWatchlist()async{
+    bool isWatched = !_watched;
+    setState(() {
+      _watched = isWatched;
+    });
+    WatchedProvider watchedProvider = WatchedProvider();
+    final movie = FirebaseMovieModel(
+        title: _movie.title,
+        favourite: _favourite,
+        movieId: _movie.id,
+        poster: _movie.posterPath,
+        release: _movie.releaseDate,
+        vote: _movie.voteAverage,
+        watched: isWatched,
+        runtime: _movie.runtime.toString(),
+        genres: _genres()
+    );
+    if(isWatched){
+      await watchedProvider.addToWatchedMovies(movie);
+    }else{
+      await watchedProvider.removeWatchedMovies(movie.movieId);
+    }
+
+  }
+  Future _addToFavourite()async{
+    bool fav = !_favourite;
+    final movie = FirebaseMovieModel(
+        title: _movie.title,
+        favourite: fav,
+        movieId: _movie.id,
+        poster: _movie.posterPath,
+        release: _movie.releaseDate,
+        vote: _movie.voteAverage,
+        watched: _watched,
+      runtime: _movie.runtime.toString(),
+      genres: _genres()
+    );
+    setState(() {
+      _favourite = fav;
+    });
+    FavouriteProvider favouriteProvider = FavouriteProvider();
+    favouriteProvider.addOrRemoveFavourite(movie);
+  }
+
+  List<String> _genres(){
+    List<String> genres = List();
+    _movie.genres.forEach((element) {
+      print(element.name);
+      genres.add(element.name);
+    });
+    return genres;
   }
 }

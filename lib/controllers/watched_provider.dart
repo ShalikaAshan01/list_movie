@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:popcorn/models/firebase_movie_model.dart';
+import 'package:popcorn/models/popular_movie_model.dart';
 
 import 'auth_provider.dart';
 
@@ -9,29 +11,23 @@ class WatchedProvider{
   final _auth = AuthProvider();
   Stream moviStream;
 
-  addToWatchedMovies(movieName, movieId, poster, vote, release) async{
+  addToWatchedMovies(FirebaseMovieModel movie) async{
     final user = await _auth.getUser();
     _firestore
         .collection('user')
         .document(user.uid)
-        .collection("Movies").where('id', isEqualTo: movieId).getDocuments().then((value) => {
+        .collection("Movies").where('movieId', isEqualTo: movie.movieId).getDocuments().then((value)  {
           if(value.documents.length == 0){
               _firestore
                 .collection('user')
                 .document(user.uid)
                 .collection("Movies")
-                .add({'title': movieName, 'id': movieId, 'poster': poster, 'favourite': false, 'watched': true, 'vote': vote, 'release': release }).then((value) => null)
+                .add(movie.toMap()).then((value) => null);
           }else {
               _firestore
                 .runTransaction((transaction) async =>
                 await transaction.update(value.documents[0].reference, { 'watched': true })
-              )
-
-//            _firestore
-//                .collection('user')
-//                .document(user.uid)
-//                .collection("Movies").document().
-//                .where(field)
+              );
           }
         });
   }
@@ -41,11 +37,18 @@ class WatchedProvider{
     _firestore
         .collection('user')
         .document(user.uid)
-        .collection("Movies").where('id', isEqualTo: movieID).getDocuments().then((value) => {
-        _firestore
-            .runTransaction((transaction) async {
-        await transaction.delete(value.documents[0].reference);
-        })
+        .collection("Movies").where('movieId', isEqualTo: movieID).getDocuments().then((value){
+          if(value.documents[0].data["watched"]==true &&value.documents[0].data["favourite"]==false){
+            _firestore
+                .runTransaction((transaction) async {
+              await transaction.delete(value.documents[0].reference);
+            });
+          }else{
+            _firestore
+                .runTransaction((transaction) async =>
+            await transaction.update(value.documents[0].reference, { 'watched': false })
+            );
+          }
     });
   }
 
