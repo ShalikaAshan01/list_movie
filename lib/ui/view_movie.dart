@@ -8,6 +8,7 @@ import 'package:popcorn/models/movie_model.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
 import 'package:popcorn/utils/loading_widget.dart';
 
+/// This class shows the movie view(display given movie in screen)
 class ViewMovie extends StatefulWidget {
   final int movieId;
 
