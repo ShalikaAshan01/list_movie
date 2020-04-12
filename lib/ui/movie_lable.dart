@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:popcorn/controllers/favourite_provider.dart';
-import 'package:popcorn/controllers/watched_provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:popcorn/ui/view_movie.dart';
 
@@ -144,7 +142,7 @@ class _MovieLabelState extends State<MovieLabel> {
                             itemBuilder: (context, _) => Icon(
                               Icons.star,
                               color: Colors.amber,
-                            ),
+                            ), onRatingUpdate: (double value) { },
 //                      onRatingUpdate: (rating) {
 //                        print(rating);
 //                      },

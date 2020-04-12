@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/controllers/favourite_provider.dart';
-import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
 import 'package:popcorn/models/firebase_movie_model.dart';
 import 'package:popcorn/ui/view_movie.dart';

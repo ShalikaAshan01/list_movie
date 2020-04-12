@@ -252,7 +252,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     : deactiveColor),
           ),
           ListTile(
-            onTap: ()=>_navigate(PageName.watchList, watchedList()),
+            onTap: ()=>_navigate(PageName.watchList, WatchedList()),
             title: Text("Watch list",
                 style: selectedWatchList
                     ? activeText

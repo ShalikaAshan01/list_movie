@@ -1,19 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:popcorn/ui/movie_lable.dart';
-import 'package:popcorn/ui/view_movie.dart';
 import 'package:popcorn/utils/app_drawer.dart';
-import 'package:carousel_pro/carousel_pro.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
-import 'package:popcorn/utils/loading_widget.dart';
 
-class watchedList extends StatefulWidget {
+class WatchedList extends StatefulWidget {
   @override
-  _watchedListState createState() => _watchedListState();
+  _WatchedListState createState() => _WatchedListState();
 }
 
-class _watchedListState extends State<watchedList> {
+class _WatchedListState extends State<WatchedList> {
   WatchedProvider _watchedProvider = WatchedProvider();
   Future watchedMovieList;
 
