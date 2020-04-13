@@ -105,6 +105,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   children: <Widget>[
                     AnimatedContainer(
                       duration: _duration,
+                      width: double.infinity,
                       padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
                       height: _collapsed ? height * 0.1 : (height * 0.07),
                       decoration: BoxDecoration(
@@ -112,23 +113,24 @@ class _AppDrawerState extends State<AppDrawer> {
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(_collapsed ? 0 : 20)),
                       ),
-                      child: Row(
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: <Widget>[
-                          SizedBox(
-                            width: width * 0.04,
+                          Positioned(
+                            left: width * 0.04,
+                            child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _collapsed = !_collapsed;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.menu,
+                                  size: width * 0.065,
+                                  color: Colors.white70,
+                                )),
                           ),
-                          InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _collapsed = !_collapsed;
-                                });
-                              },
-                              child: Icon(
-                                Icons.menu,
-                                size: width * 0.065,
-                                color: Colors.white70,
-                              )),
-                          Expanded(
+                          Container(
                             child: Text(
                               widget.title,
                               textAlign: TextAlign.center,
@@ -257,7 +259,7 @@ class _AppDrawerState extends State<AppDrawer> {
           ),
           ListTile(
             onTap: () => _navigate(PageName.watchList, WatchedList()),
-            title: Text("Watch list",
+            title: Text("Wishlist",
                 style: selectedWatchList ? activeText : deactiveText),
             leading: Icon(
               Icons.watch_later,

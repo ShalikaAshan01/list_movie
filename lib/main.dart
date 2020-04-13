@@ -24,12 +24,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PoP Corn',
+      debugShowCheckedModeBanner: false,
       themeMode: MyInheritedData.of(context).darkMode
           ? ThemeMode.dark
           : ThemeMode.light,
       theme: MyInheritedData.of(context).darkMode
-          ? ThemeData.dark()
-          : ThemeData.light().copyWith(backgroundColor: Colors.white),
+          ? ThemeData.dark().copyWith(primaryColor: Colors.blue)
+          : ThemeData.light().copyWith(backgroundColor: Colors.white,primaryColor: Colors.blue),
 //      theme: ThemeData(
 //        brightness: Brightness.light,
 //        primarySwatch: Colors.blue,

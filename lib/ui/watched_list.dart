@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popcorn/ui/movie_lable.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
-import 'package:popcorn/utils/loading_widget.dart';
 
 class WatchedList extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class _WatchedListState extends State<WatchedList> {
           FutureBuilder(
               future: watchedMovieList,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Expanded(child: LoadingWidget());
+                if (!snapshot.hasData) return Expanded(child: SpinKitFoldingCube(size: 50,color: Theme.of(context).primaryColor,));
                 if (snapshot.data.documents.length == 0) {
                   return Expanded(
                     child: Center(

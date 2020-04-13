@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popcorn/controllers/favourite_provider.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
@@ -51,14 +52,16 @@ class _ViewMovieState extends State<ViewMovie> {
       favourite = fmodel.favourite;
       watched = fmodel.watched;
     }
-    setState(() {
-      _loading = false;
-      _movie = movieModel;
-      _castList = castList;
-      _recommendationList = recommendationList;
-      _favourite = favourite;
-      _watched = watched;
-    });
+    if(mounted){
+      setState(() {
+        _loading = false;
+        _movie = movieModel;
+        _castList = castList;
+        _recommendationList = recommendationList;
+        _favourite = favourite;
+        _watched = watched;
+      });
+    }
   }
 
   /// Fetch movie from api using movie provider
@@ -90,7 +93,7 @@ class _ViewMovieState extends State<ViewMovie> {
 
     return Scaffold(
       body: _loading
-          ? LoadingWidget()
+          ? SpinKitFoldingCube(size: 50,color: Theme.of(context).primaryColor,)
           : SingleChildScrollView(
               child: Stack(
                 children: <Widget>[

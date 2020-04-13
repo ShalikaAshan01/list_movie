@@ -14,7 +14,7 @@ class LoadingWidget extends StatelessWidget {
         height: double.maxFinite,
         alignment: Alignment.center,
         child: SpinKitCircle(
-          color: Colors.redAccent,
+          color: Theme.of(context).primaryColor,
           size: size,
         ),
       ),
