@@ -26,7 +26,6 @@ class MovieLabel extends StatefulWidget {
 }
 
 class _MovieLabelState extends State<MovieLabel> {
-
 //  deleteLable(){
 //    widget.delete =
 //  }
@@ -44,8 +43,11 @@ class _MovieLabelState extends State<MovieLabel> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
       child: InkWell(
-        onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ViewMovie(movieId: int.parse(widget.id),)));
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ViewMovie(
+                    movieId: int.parse(widget.id),
+                  )));
         },
         child: Container(
           height: MediaQuery.of(context).size.height * 0.2,
@@ -112,11 +114,9 @@ class _MovieLabelState extends State<MovieLabel> {
                                   child: GestureDetector(
                                     onTap: () {
                                       widget.delete(widget.id);
-                                      setState(() {
-
-                                      });
+                                      setState(() {});
 //                                  _watchedProvider.addToWatchedMovies(widget.movieName, widget.id, widget.poster, widget.vote, widget.release);
-                                      },
+                                    },
                                     child: Row(
                                       // Replace with a Row for horizontal icon + text
                                       children: <Widget>[
@@ -142,12 +142,12 @@ class _MovieLabelState extends State<MovieLabel> {
                             itemBuilder: (context, _) => Icon(
                               Icons.star,
                               color: Colors.amber,
-                            ), onRatingUpdate: (double value) { },
+                            ),
+                            onRatingUpdate: (double value) {},
 //                      onRatingUpdate: (rating) {
 //                        print(rating);
 //                      },
                           ),
-
 
 //                        Padding(
 //                          padding: const EdgeInsets.all(8.0),
@@ -221,7 +221,6 @@ class _MovieLabelState extends State<MovieLabel> {
                         ],
                       ),
                     )),
-
               ],
             ),
           ),

@@ -26,8 +26,7 @@ class _WatchedListState extends State<WatchedList> {
 
     return AppDrawer(
         pageName: PageName.watchList,
-        child: Column(
-            children: <Widget>[
+        child: Column(children: <Widget>[
 //          Text(
 //            "Swap To remove Items",
 //            style: TextStyle(color: Colors.grey),
@@ -35,8 +34,7 @@ class _WatchedListState extends State<WatchedList> {
           FutureBuilder(
               future: watchedMovieList,
               builder: (context, snapshot) {
-                if(!snapshot.hasData)
-                  return Expanded(child: LoadingWidget());
+                if (!snapshot.hasData) return Expanded(child: LoadingWidget());
                 if (snapshot.data.documents.length == 0) {
                   return Expanded(
                     child: Center(
@@ -55,7 +53,8 @@ class _WatchedListState extends State<WatchedList> {
 //                    physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (_, int index) {
                         print(snapshot.data.documents[index]);
-                        final id = snapshot.data.documents[index]['movieId'].toString();
+                        final id = snapshot.data.documents[index]['movieId']
+                            .toString();
                         final name = snapshot.data.documents[index]['title'];
                         final poster = snapshot.data.documents[index]['poster'];
                         final vote = snapshot.data.documents[index]['vote'];

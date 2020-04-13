@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
-class PopularMovieResult{
+/// This model class is used for get popular movies from api
+/// Whole dart code is Generated from https://javiercbk.github.io/json_to_dart/
+class PopularMovieResult {
   int page;
   int totalResults;
   int totalPages;
   List<PopularMovieInformation> movieInformations;
 
   PopularMovieResult({
-     @required this.page,
-  @required this.totalResults,
-  @required this.totalPages,
-     this.movieInformations,
+    @required this.page,
+    @required this.totalResults,
+    @required this.totalPages,
+    this.movieInformations,
   });
 
+  /// This method will cast json object to dart object
   factory PopularMovieResult.fromJson(Map<String, dynamic> json) {
     List<PopularMovieInformation> list;
     if (json['results'] != null) {
@@ -22,15 +25,14 @@ class PopularMovieResult{
       });
     }
     return PopularMovieResult(
-      page: json["page"],
-      totalResults: json["total_results"],
-      totalPages: json["total_pages"],
-      movieInformations: list
-    );
+        page: json["page"],
+        totalResults: json["total_results"],
+        totalPages: json["total_pages"],
+        movieInformations: list);
   }
-
 }
 
+/// This model class gives the popular movie information
 class PopularMovieInformation {
   dynamic popularity;
   dynamic voteCount;
@@ -49,20 +51,21 @@ class PopularMovieInformation {
 
   PopularMovieInformation(
       {this.popularity,
-        this.voteCount,
-        this.video,
-        this.posterPath,
-        this.id,
-        this.adult,
-        this.backdropPath,
-        this.originalLanguage,
-        this.originalTitle,
-        this.genreIds,
-        this.title,
-        this.voteAverage,
-        this.overview,
-        this.releaseDate});
+      this.voteCount,
+      this.video,
+      this.posterPath,
+      this.id,
+      this.adult,
+      this.backdropPath,
+      this.originalLanguage,
+      this.originalTitle,
+      this.genreIds,
+      this.title,
+      this.voteAverage,
+      this.overview,
+      this.releaseDate});
 
+  /// This method will cast json object to dart object
   PopularMovieInformation.fromJson(Map<String, dynamic> json) {
     popularity = json['popularity'];
     voteCount = json['vote_count'];
@@ -80,6 +83,7 @@ class PopularMovieInformation {
     releaseDate = json['release_date'];
   }
 
+  /// This method will cast dart object to json object
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['popularity'] = this.popularity;

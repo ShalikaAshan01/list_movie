@@ -3,60 +3,63 @@ import 'package:popcorn/models/firebase_movie_model.dart';
 
 import 'auth_provider.dart';
 
-class WatchedProvider{
-
+class WatchedProvider {
   final _firestore = Firestore.instance;
   final _auth = AuthProvider();
   Stream moviStream;
 
-  addToWatchedMovies(FirebaseMovieModel movie) async{
+  addToWatchedMovies(FirebaseMovieModel movie) async {
     final user = await _auth.getUser();
     _firestore
         .collection('user')
         .document(user.uid)
-        .collection("Movies").where('movieId', isEqualTo: movie.movieId).getDocuments().then((value)  {
-          if(value.documents.length == 0){
-              _firestore
-                .collection('user')
-                .document(user.uid)
-                .collection("Movies")
-                .add(movie.toMap()).then((value) => null);
-          }else {
-              _firestore
-                .runTransaction((transaction) async =>
-                await transaction.update(value.documents[0].reference, { 'watched': true })
-              );
-          }
-        });
-  }
-
-  removeWatchedMovies(movieID) async{
-    final user = await _auth.getUser();
-    _firestore
-        .collection('user')
-        .document(user.uid)
-        .collection("Movies").where('movieId', isEqualTo: movieID).getDocuments().then((value){
-          if(value.documents[0].data["watched"]==true &&value.documents[0].data["favourite"]==false){
-            _firestore
-                .runTransaction((transaction) async {
-              await transaction.delete(value.documents[0].reference);
-            });
-          }else{
-            _firestore
-                .runTransaction((transaction) async =>
-            await transaction.update(value.documents[0].reference, { 'watched': false })
-            );
-          }
+        .collection("Movies")
+        .where('movieId', isEqualTo: movie.movieId)
+        .getDocuments()
+        .then((value) {
+      if (value.documents.length == 0) {
+        _firestore
+            .collection('user')
+            .document(user.uid)
+            .collection("Movies")
+            .add(movie.toMap())
+            .then((value) => null);
+      } else {
+        _firestore.runTransaction((transaction) async => await transaction
+            .update(value.documents[0].reference, {'watched': true}));
+      }
     });
   }
 
-  Future<QuerySnapshot> getWatchedMovies()  {
+  removeWatchedMovies(movieID) async {
+    final user = await _auth.getUser();
+    _firestore
+        .collection('user')
+        .document(user.uid)
+        .collection("Movies")
+        .where('movieId', isEqualTo: movieID)
+        .getDocuments()
+        .then((value) {
+      if (value.documents[0].data["watched"] == true &&
+          value.documents[0].data["favourite"] == false) {
+        _firestore.runTransaction((transaction) async {
+          await transaction.delete(value.documents[0].reference);
+        });
+      } else {
+        _firestore.runTransaction((transaction) async => await transaction
+            .update(value.documents[0].reference, {'watched': false}));
+      }
+    });
+  }
 
-    Future<QuerySnapshot> snapshot  =  _auth.getUser().then((value) {
-      return    _firestore.collection('user').document(value.uid)
-          .collection('Movies').where('watched', isEqualTo: true )
+  Future<QuerySnapshot> getWatchedMovies() {
+    Future<QuerySnapshot> snapshot = _auth.getUser().then((value) {
+      return _firestore
+          .collection('user')
+          .document(value.uid)
+          .collection('Movies')
+          .where('watched', isEqualTo: true)
           .getDocuments();
-
     });
 
 //      Future<QuerySnapshot> snapshot = _firestore.collection('user').document(user.uid)
@@ -67,7 +70,7 @@ class WatchedProvider{
 //          .collection('Movies').where('watched', isEqualTo: true )
 //          .snapshots();
 
-      return snapshot;
+    return snapshot;
   }
 
 //  String getUid() {
@@ -75,20 +78,23 @@ class WatchedProvider{
 ////    return user;
 //  }
 
-  getWatchedMovies2()  async{
-    Stream<QuerySnapshot> snapshot  =  await _auth.getUser().then((value) async {
-      this.moviStream =  _firestore.collection('user').document(value.uid)
-          .collection('Movies').where('watched', isEqualTo: true )
-          .getDocuments().asStream();
+  getWatchedMovies2() async {
+    Stream<QuerySnapshot> snapshot = await _auth.getUser().then((value) async {
+      this.moviStream = _firestore
+          .collection('user')
+          .document(value.uid)
+          .collection('Movies')
+          .where('watched', isEqualTo: true)
+          .getDocuments()
+          .asStream();
       return null;
     });
 
     return snapshot;
   }
 
-  setMovieStream(){
+  setMovieStream() {
     this.getWatchedMovies2();
     return this.moviStream;
   }
-
 }

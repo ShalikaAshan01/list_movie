@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-class FirebaseMovieModel{
+/// This model class can get movie information from the firestore
+class FirebaseMovieModel {
   String title;
   int movieId;
   String poster;
@@ -23,6 +24,7 @@ class FirebaseMovieModel{
     @required this.runtime,
   });
 
+  /// This method will cast dart object to json object
   Map<String, dynamic> toMap() {
     return {
       'title': this.title,
@@ -37,8 +39,9 @@ class FirebaseMovieModel{
     };
   }
 
+  /// This method will cast json object to dart object
   factory FirebaseMovieModel.fromMap(Map<String, dynamic> map) {
-    return new FirebaseMovieModel(
+    return FirebaseMovieModel(
       title: map['title'] as String,
       movieId: map['movieId'] as int,
       poster: map['poster'] as String,

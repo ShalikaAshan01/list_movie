@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Provide a inherited class for the handle dark mode
 class MyInheritedWidget extends StatefulWidget {
   final Widget child;
   const MyInheritedWidget({Key key, this.child}) : super(key: key);
@@ -18,15 +19,15 @@ class _MyInheritedWidgetState extends State<MyInheritedWidget> {
     _getTheme();
   }
 
-  ///This method gets saved darkMode which is saved in shared preferences
-  Future _getTheme()async{
+  /// This method gets saved darkMode which is saved in shared preferences
+  Future _getTheme() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool dark= preferences.getBool("darkMode");
-    if(dark==null){
+    bool dark = preferences.getBool("darkMode");
+    if (dark == null) {
       setState(() {
         _darkMode = false;
       });
-    }else{
+    } else {
       setState(() {
         _darkMode = dark;
       });
@@ -34,7 +35,7 @@ class _MyInheritedWidgetState extends State<MyInheritedWidget> {
   }
 
   /// This mode will change the current theme mode
-  void _changeTheme(bool dark)async{
+  void _changeTheme(bool dark) async {
     setState(() {
       _darkMode = dark;
     });
@@ -52,20 +53,21 @@ class _MyInheritedWidgetState extends State<MyInheritedWidget> {
   }
 }
 
+/// Inherited data
 class MyInheritedData extends InheritedWidget {
   final bool darkMode;
   final ValueChanged<bool> themeChange;
   const MyInheritedData({
     Key key,
     @required Widget child,
-    this.darkMode, this.themeChange,
+    this.darkMode,
+    this.themeChange,
   })  : assert(child != null),
         super(key: key, child: child);
 
   static MyInheritedData of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<MyInheritedData>();
   }
-
 
   @override
   bool updateShouldNotify(MyInheritedData old) {
