@@ -32,6 +32,6 @@ This application contains with Dark and Light mode feature. Because of that ther
 
 <img src="screenshots/light/loading.png" height="480px"/>&nbsp;<img src="screenshots/dark/loading.png" height="480px"/>&nbsp;
 
-** Splash Screen **
+**Splash Screen**
 
 <img src="screenshots/native_splash.png" height="480px"/>&nbsp;<img src="screenshots/loading.png" height="480px"/>&nbsp;
