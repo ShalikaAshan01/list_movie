@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
-import 'package:popcorn/utils/loading_widget.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/ui/movie_lable.dart';
 import 'package:shimmer/shimmer.dart';
 
+/// This entry point is used for displaying home ui for the app
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   )),
             ),
+            // fetch popular movie from the api
             Container(
               child: FutureBuilder(
                 future: _movieProvider.fetchPopularMovies(2),

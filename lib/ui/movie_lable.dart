@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:popcorn/ui/view_movie.dart';
 
+/// This entry point provides the list  view item for homepage and watchlist
 class MovieLabel extends StatefulWidget {
   final String movieName;
   final String id;
@@ -34,6 +35,7 @@ class _MovieLabelState extends State<MovieLabel> {
   Widget build(BuildContext context) {
     var nameColor = Colors.grey[200];
     var releaseColor = Colors.grey;
+    // change the color according to the theme
     if (Theme.of(context).brightness == Brightness.light)
       nameColor = Colors.black54;
 
