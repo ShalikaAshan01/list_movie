@@ -28,6 +28,10 @@ This application contains with Dark and Light mode feature. Because of that ther
 
 <img src="screenshots/light/watch.png" height="480px"/>&nbsp;<img src="screenshots/dark/watch.png" height="480px"/>&nbsp;
 
+**Swipe to Delete**
+
+<img src="screenshots/light/swipe_delete.png" height="480px"/>&nbsp;<img src="screenshots/dark/swipe_delete.png" height="480px"/>&nbsp;
+
 **Loading Skeloton**
 
 <img src="screenshots/light/loading.png" height="480px"/>&nbsp;<img src="screenshots/dark/loading.png" height="480px"/>&nbsp;
