@@ -4,6 +4,7 @@ import 'package:popcorn/ui/movie_lable.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
 
+/// This entry point is used for the user interface of the watch list page
 class WatchedList extends StatefulWidget {
   @override
   _WatchedListState createState() => _WatchedListState();
@@ -13,6 +14,7 @@ class _WatchedListState extends State<WatchedList> {
   WatchedProvider _watchedProvider = WatchedProvider();
   Future watchedMovieList;
 
+  /// Accessing the remove movie method from the watch list
   deleteLable(movieId) {
     _watchedProvider.removeWatchedMovies(movieId);
     setState(() {

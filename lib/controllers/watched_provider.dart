@@ -3,11 +3,13 @@ import 'package:popcorn/models/firebase_movie_model.dart';
 
 import 'auth_provider.dart';
 
+/// This entry point used for accessing specific user's watch movie list
 class WatchedProvider {
   final _firestore = Firestore.instance;
   final _auth = AuthProvider();
   Stream moviStream;
 
+  /// Provide a method for adding watched movie to user's watch list
   addToWatchedMovies(FirebaseMovieModel movie) async {
     final user = await _auth.getUser();
     _firestore
@@ -31,6 +33,7 @@ class WatchedProvider {
     });
   }
 
+  /// Provides a method for removing movie from existing watch list
   removeWatchedMovies(movieID) async {
     final user = await _auth.getUser();
     _firestore
@@ -52,6 +55,7 @@ class WatchedProvider {
     });
   }
 
+  /// Provides a method for get one time watch list for the logged user
   Future<QuerySnapshot> getWatchedMovies() {
     Future<QuerySnapshot> snapshot = _auth.getUser().then((value) {
       return _firestore
@@ -78,6 +82,7 @@ class WatchedProvider {
 ////    return user;
 //  }
 
+  ///Provides a method for get logged user watch list as a stream
   getWatchedMovies2() async {
     Stream<QuerySnapshot> snapshot = await _auth.getUser().then((value) async {
       this.moviStream = _firestore
@@ -92,7 +97,7 @@ class WatchedProvider {
 
     return snapshot;
   }
-
+  ///Provides a method for set the stream for watched movie list
   setMovieStream() {
     this.getWatchedMovies2();
     return this.moviStream;
