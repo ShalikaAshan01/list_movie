@@ -106,8 +106,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     AnimatedContainer(
                       duration: _duration,
                       width: double.infinity,
-                      padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
-                      height: _collapsed ? height * 0.1 : (height * 0.07),
+                      height: 60,
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.only(

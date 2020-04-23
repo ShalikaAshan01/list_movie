@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           ? ThemeMode.dark
           : ThemeMode.light,
       theme: MyInheritedData.of(context).darkMode
-          ? ThemeData.dark().copyWith(primaryColor: Colors.blue)
+          ? ThemeData.dark().copyWith(primaryColor: Colors.blueGrey)
           : ThemeData.light().copyWith(backgroundColor: Colors.white,primaryColor: Colors.blue),
 //      theme: ThemeData(
 //        brightness: Brightness.light,
