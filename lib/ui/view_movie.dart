@@ -2,12 +2,17 @@ import 'dart:io' show Platform;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:popcorn/controllers/favourite_provider.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
+import 'package:popcorn/controllers/watched_provider.dart';
 import 'package:popcorn/models/cast_model.dart';
+import 'package:popcorn/models/firebase_movie_model.dart';
 import 'package:popcorn/models/movie_model.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
 import 'package:popcorn/utils/loading_widget.dart';
 
+/// Provides a user interface for the specific movie information
 class ViewMovie extends StatefulWidget {
   final int movieId;
 
@@ -23,6 +28,8 @@ class _ViewMovieState extends State<ViewMovie> {
   MovieProvider _movieProvider = MovieProvider();
   List<CastModel> _castList = List();
   List<PopularMovieInformation> _recommendationList = List();
+  bool _watched = false;
+  bool _favourite = false;
 
   @override
   void initState() {
@@ -35,29 +42,48 @@ class _ViewMovieState extends State<ViewMovie> {
   Future _init() async {
     MovieModel movieModel = await _getMovie();
     List<CastModel> castList = await _getCastList();
-    List<PopularMovieInformation> recommendationList = await _getRecommendation();
-    setState(() {
-      _loading = false;
-      _movie = movieModel;
-      _castList = castList;
-      _recommendationList = recommendationList;
-    });
+    List<PopularMovieInformation> recommendationList =
+        await _getRecommendation();
+    FirebaseMovieModel fmodel = await _getFirebase(movieModel.id);
+    bool watched = false;
+    bool favourite = false;
+
+    if (fmodel != null) {
+      favourite = fmodel.favourite;
+      watched = fmodel.watched;
+    }
+    if(mounted){
+      setState(() {
+        _loading = false;
+        _movie = movieModel;
+        _castList = castList;
+        _recommendationList = recommendationList;
+        _favourite = favourite;
+        _watched = watched;
+      });
+    }
   }
 
-  /// Fetch movie using movie provider
+  /// Fetch movie from api using movie provider
   Future<MovieModel> _getMovie() {
     return _movieProvider.getModvie(widget.movieId);
   }
 
-  /// get cast list related to the movie
+  /// get cast list related to the movie. This information in get using the api
   Future<List<CastModel>> _getCastList() {
     return _movieProvider.getCastList(widget.movieId);
   }
 
-  ///fetch movie recommendations related to the movie
-  Future<List<PopularMovieInformation>> _getRecommendation()async{
-    final result =await _movieProvider.getMovieRecommendations(widget.movieId);
+  ///fetch movie recommendations related to the movie. This information in get using the api
+  Future<List<PopularMovieInformation>> _getRecommendation() async {
+    final result = await _movieProvider.getMovieRecommendations(widget.movieId);
     return result.movieInformations;
+  }
+
+  /// get movie information from firebase, if the movie is favourite or watched
+  /// this method is used for the check movie is already in watchlist or favourite list
+  Future<FirebaseMovieModel> _getFirebase(int id) {
+    return _movieProvider.fetchMovieFromFirebase(id);
   }
 
   @override
@@ -67,7 +93,7 @@ class _ViewMovieState extends State<ViewMovie> {
 
     return Scaffold(
       body: _loading
-          ? LoadingWidget()
+          ? SpinKitFoldingCube(size: 50,color: Theme.of(context).primaryColor,)
           : SingleChildScrollView(
               child: Stack(
                 children: <Widget>[
@@ -99,16 +125,21 @@ class _ViewMovieState extends State<ViewMovie> {
                     margin: EdgeInsets.only(
                         top: height * 0.25, right: width * 0.03),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () => _addToFavourite(),
                       child: Material(
-                        color: Colors.white,
+                          color: Colors.white,
                           elevation: 10,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100)
-                          ),
+                              borderRadius: BorderRadius.circular(100)),
                           child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Icon(Icons.favorite,color: Colors.pinkAccent,size: 30,),
+                            padding: const EdgeInsets.all(10.0),
+                            child: Icon(
+                              _favourite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.pinkAccent,
+                              size: 30,
+                            ),
                           )),
                     ),
                   ),
@@ -120,7 +151,7 @@ class _ViewMovieState extends State<ViewMovie> {
     );
   }
 
-  // this method will build the contents
+  /// this method will build the contents of the page
   Widget _buildBody() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.height;
@@ -150,8 +181,9 @@ class _ViewMovieState extends State<ViewMovie> {
                   child: _categoryList(),
                 ),
                 IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.playlist_add),
+                  onPressed: () => _handleWatchlist(),
+                  icon: Icon(
+                      _watched ? Icons.playlist_add_check : Icons.playlist_add),
                 )
               ],
             ),
@@ -219,7 +251,7 @@ class _ViewMovieState extends State<ViewMovie> {
     );
   }
 
-  //This method will build category list from array
+  /// This method will build category list from array provided in api
   Widget _categoryList() {
     int length = _movie.genres.length;
     if (length > 3) length = length;
@@ -270,7 +302,7 @@ class _ViewMovieState extends State<ViewMovie> {
     );
   }
 
-  ///build cast list
+  /// build cast list from the provided list
   Widget _buildCastList() {
     return ListView.builder(
       itemCount: _castList.length,
@@ -293,25 +325,34 @@ class _ViewMovieState extends State<ViewMovie> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Card(
-            elevation: 10,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: FadeInImage(
-                  height: 130,
+                    height: 130,
                     width: 100,
                     fit: BoxFit.cover,
                     placeholder: AssetImage(placeholder),
-                    image: NetworkImage("https://image.tmdb.org/t/p/w500/${cast.profilePath}")
-                ),
+                    image: NetworkImage(
+                        "https://image.tmdb.org/t/p/w780/${cast.profilePath}")),
               )),
           Padding(
-            padding: const EdgeInsets.only(left:8.0,top: 6),
-            child: Text(cast.character,style: textTheme.headline6.copyWith(fontSize: 14),),
+            padding: const EdgeInsets.only(left: 8.0, top: 6),
+            child: Text(
+              cast.character,
+              style: textTheme.headline6.copyWith(fontSize: 14),
+            ),
           ),
-          Expanded(child: Padding(
-            padding: const EdgeInsets.only(left:8.0),
-            child: Text(cast.name,style: textTheme.headline4.copyWith(fontSize: 14,fontWeight: FontWeight.bold),),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              cast.name,
+              style: textTheme.headline4
+                  .copyWith(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
           )),
         ],
       ),
@@ -323,19 +364,22 @@ class _ViewMovieState extends State<ViewMovie> {
     return ListView.builder(
       itemCount: _recommendationList.length,
       scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index) => _recommendationItem(_recommendationList[index]),
+      itemBuilder: (context, index) =>
+          _recommendationItem(_recommendationList[index]),
     );
   }
 
   /// Recommendation list item
   Widget _recommendationItem(PopularMovieInformation movie) {
-
     final textTheme = Theme.of(context).textTheme;
 
     return InkWell(
-      onTap: ()=>Navigator.push(context, MaterialPageRoute(
-        builder: (context)=> ViewMovie(movieId: movie.id,)
-      )),
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ViewMovie(
+                    movieId: movie.id,
+                  ))),
       child: Container(
         width: 100,
         child: Column(
@@ -343,21 +387,26 @@ class _ViewMovieState extends State<ViewMovie> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Card(
-              elevation: 10,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
                   child: FadeInImage(
-                    height: 130,
+                      height: 130,
                       width: 100,
                       fit: BoxFit.cover,
-                      placeholder: AssetImage("assets/images/movie_placeholder.png"),
-                      image: NetworkImage("https://image.tmdb.org/t/p/w500/${movie.posterPath}")
-                  ),
+                      placeholder:
+                          AssetImage("assets/images/movie_placeholder.png"),
+                      image: NetworkImage(
+                          "https://image.tmdb.org/t/p/w500/${movie.posterPath}")),
                 )),
             Padding(
-              padding: const EdgeInsets.only(left:8.0,top: 6),
-              child: Text(movie.originalTitle,style: textTheme.headline6.copyWith(fontSize: 14),),
+              padding: const EdgeInsets.only(left: 8.0, top: 6),
+              child: Text(
+                movie.originalTitle,
+                style: textTheme.headline6.copyWith(fontSize: 14),
+              ),
             ),
           ],
         ),
@@ -368,5 +417,59 @@ class _ViewMovieState extends State<ViewMovie> {
   /// get theme mode
   bool _isDarkMode() {
     return Theme.of(context).brightness == Brightness.dark;
+  }
+
+  ///add movie to the watchlist
+  Future<void> _handleWatchlist() async {
+    bool isWatched = !_watched;
+    setState(() {
+      _watched = isWatched;
+    });
+    WatchedProvider watchedProvider = WatchedProvider();
+    final movie = FirebaseMovieModel(
+        title: _movie.title,
+        favourite: _favourite,
+        movieId: _movie.id,
+        poster: _movie.posterPath,
+        release: _movie.releaseDate,
+        vote: _movie.voteAverage,
+        watched: isWatched,
+        runtime: _movie.runtime.toString(),
+        genres: _genres());
+    if (isWatched) {
+      await watchedProvider.addToWatchedMovies(movie);
+    } else {
+      await watchedProvider.removeWatchedMovies(movie.movieId);
+    }
+  }
+
+  // add or remove movie from favourite list
+  Future _addToFavourite() async {
+    bool fav = !_favourite;
+    final movie = FirebaseMovieModel(
+        title: _movie.title,
+        favourite: fav,
+        movieId: _movie.id,
+        poster: _movie.posterPath,
+        release: _movie.releaseDate,
+        vote: _movie.voteAverage,
+        watched: _watched,
+        runtime: _movie.runtime.toString(),
+        genres: _genres());
+    setState(() {
+      _favourite = fav;
+    });
+    FavouriteProvider favouriteProvider = FavouriteProvider();
+    favouriteProvider.addOrRemoveFavourite(movie);
+  }
+
+  /// build genres name list from the Genre model
+  List<String> _genres() {
+    List<String> genres = List();
+    _movie.genres.forEach((element) {
+      print(element.name);
+      genres.add(element.name);
+    });
+    return genres;
   }
 }

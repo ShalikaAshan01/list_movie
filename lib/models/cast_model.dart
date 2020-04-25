@@ -1,3 +1,5 @@
+/// This model class is used for get movie cast from api
+/// Whole dart code is Generated from https://javiercbk.github.io/json_to_dart/
 class CastModel {
   int castId;
   String character;
@@ -10,14 +12,15 @@ class CastModel {
 
   CastModel(
       {this.castId,
-        this.character,
-        this.creditId,
-        this.gender,
-        this.id,
-        this.name,
-        this.order,
-        this.profilePath});
+      this.character,
+      this.creditId,
+      this.gender,
+      this.id,
+      this.name,
+      this.order,
+      this.profilePath});
 
+  /// This method will cast json object to dart object
   CastModel.fromJson(Map<String, dynamic> json) {
     castId = json['cast_id'];
     character = json['character'];
@@ -29,8 +32,9 @@ class CastModel {
     profilePath = json['profile_path'];
   }
 
+  /// This method will cast dart object to json object
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['cast_id'] = this.castId;
     data['character'] = this.character;
     data['credit_id'] = this.creditId;

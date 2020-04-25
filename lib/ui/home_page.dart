@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:popcorn/models/popular_movie_model.dart';
-import 'package:popcorn/utils/loading_widget.dart';
 import 'package:popcorn/controllers/movie_provider.dart';
 import 'package:popcorn/utils/app_drawer.dart';
 import 'package:popcorn/ui/movie_lable.dart';
+import 'package:shimmer/shimmer.dart';
 
-
+/// This entry point is used for displaying home ui for the app
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -16,9 +16,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _movieProvider = MovieProvider();
 
-  lableFunc(lable){
+  lableFunc(lable) {
     print('Lable');
   }
+
   @override
   Widget build(BuildContext context) {
     return AppDrawer(
@@ -27,7 +28,10 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             ClipRRect(
-              borderRadius: BorderRadius.only(bottomRight: Radius.elliptical(75, 50), bottomLeft: Radius.elliptical(75, 50), ),
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.elliptical(75, 50),
+                bottomLeft: Radius.elliptical(75, 50),
+              ),
               child: Container(
                   height: 300.0,
 //        width: 300.0,
@@ -40,22 +44,26 @@ class _HomePageState extends State<HomePage> {
 //          dotBgColor: Colors.purple.withOpacity(0.5),
                     borderRadius: false,
                     images: [
-                      NetworkImage('https://i0.wp.com/www.irishfilmcritic.com/wp-content/uploads/2019/09/Joker.jpg?fit=1392%2C696&ssl=1'),
-                      NetworkImage('https://ehpodcasts.files.wordpress.com/2019/04/alfredjhemlockbanner.jpg?w=1280'),
-                      NetworkImage('https://wehaveahulk.co.uk/wp-content/uploads/2018/03/Tomb-Raider-2018-Movie-Poster-Background-1920x1200-e1521931120905.jpg'),
-                      NetworkImage('https://i.pinimg.com/originals/49/e8/fd/49e8fd8c7ec30dd152db46603c2fb3d0.jpg'),
-                      NetworkImage('https://www.shannons.com.au/image-library/news/H56CQ6H4DEDBCC04_large/ford-v-ferrari.jpg'),
+                      NetworkImage(
+                          'https://i0.wp.com/www.irishfilmcritic.com/wp-content/uploads/2019/09/Joker.jpg?fit=1392%2C696&ssl=1'),
+                      NetworkImage(
+                          'https://ehpodcasts.files.wordpress.com/2019/04/alfredjhemlockbanner.jpg?w=1280'),
+                      NetworkImage(
+                          'https://wehaveahulk.co.uk/wp-content/uploads/2018/03/Tomb-Raider-2018-Movie-Poster-Background-1920x1200-e1521931120905.jpg'),
+                      NetworkImage(
+                          'https://i.pinimg.com/originals/49/e8/fd/49e8fd8c7ec30dd152db46603c2fb3d0.jpg'),
+                      NetworkImage(
+                          'https://www.shannons.com.au/image-library/news/H56CQ6H4DEDBCC04_large/ford-v-ferrari.jpg'),
 //            ExactAssetImage("assets/images/LaunchImage.jpg")
                     ],
-                  )
-              ),
+                  )),
             ),
+            // fetch popular movie from the api
             Container(
               child: FutureBuilder(
                 future: _movieProvider.fetchPopularMovies(2),
-                builder: (context,snapshot){
-                  if(!snapshot.hasData)
-                    return LoadingWidget();
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return _skeletonWidget();
                   PopularMovieResult result = snapshot.data;
                   List<PopularMovieInformation> list = result.movieInformations;
                   return ListView.builder(
@@ -63,22 +71,89 @@ class _HomePageState extends State<HomePage> {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: list.length,
-                    itemBuilder: (context,index){
-                    final id = "${list[index].id}";
-                    final name = list[index].title;
-                    final poster = list[index].posterPath;
-                    final vote = list[index].voteAverage;
-                    final release = list[index].releaseDate;
+                    itemBuilder: (context, index) {
+                      final id = "${list[index].id}";
+                      final name = list[index].title;
+                      final poster = list[index].posterPath;
+                      final vote = list[index].voteAverage;
+                      final release = list[index].releaseDate;
 //                    print(list[index].releaseDate);
-                    return MovieLabel(id: id,movieName: name,poster: poster,vote: vote, release: release, favOrWatched: false, delete: lableFunc('lable'),);
-                  },);
+                      return MovieLabel(
+                        id: id,
+                        movieName: name,
+                        poster: poster,
+                        vote: vote,
+                        release: release,
+                        favOrWatched: false,
+                      );
+                    },
+                  );
                 },
               ),
             )
-
           ],
         ),
       ),
+    );
+  }
+
+  //this is loading widget for the favourite page
+  Widget _skeletonWidget() {
+    final width = MediaQuery.of(context).size.width;
+
+    return ListView.builder(
+      itemCount: 10,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+            padding: EdgeInsets.all(8.0),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[400],
+              highlightColor: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 10,
+                          width: width * 0.7,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ));
+      },
     );
   }
 }

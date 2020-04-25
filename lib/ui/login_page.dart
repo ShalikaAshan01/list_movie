@@ -5,6 +5,7 @@ import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/ui/home_page.dart';
 import 'package:popcorn/utils/logo.dart';
 
+/// Provide a user interface for the login function
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -23,7 +24,9 @@ class _LoginPageState extends State<LoginPage> {
     Color color = Colors.black54;
     Color fillColor = Color(0xFFF7F7F7);
     Color borderShadow = Color(0xFFD5D5D5);
-    if(Theme.of(context).brightness == Brightness.dark){
+
+    // check the theme mode is dark or light
+    if (Theme.of(context).brightness == Brightness.dark) {
       fillColor = Color(0xFF1F1B24);
       borderShadow = Colors.black38;
       color = Colors.white54;
@@ -49,20 +52,30 @@ class _LoginPageState extends State<LoginPage> {
               height: 60,
             ),
             //show error
-            _error == null || _error.isEmpty?
-                Container():
-            Container(
-              padding: EdgeInsets.only(left: 10,right: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.error,color: Colors.redAccent,size: 14,),
-                  SizedBox(width: 12,),
-                  Expanded(child: Text(_error,style: TextStyle(color: Colors.redAccent),)),
-                ],
-              ),
-            ),
+            _error == null || _error.isEmpty
+                ? Container()
+                : Container(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.error,
+                          color: Colors.redAccent,
+                          size: 14,
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                            child: Text(
+                          _error,
+                          style: TextStyle(color: Colors.redAccent),
+                        )),
+                      ],
+                    ),
+                  ),
             //email field
             Container(
               padding: const EdgeInsets.fromLTRB(15, 8, 8, 8),
@@ -126,12 +139,16 @@ class _LoginPageState extends State<LoginPage> {
                               .headline6
                               .copyWith(color: Colors.white),
                         ),
-                        SizedBox(width: 15,),
-                        _loading?SpinKitRing(
-                          color: Colors.white,
-                          size: 20,
-                          lineWidth: 2,
-                        ): Container()
+                        SizedBox(
+                          width: 15,
+                        ),
+                        _loading
+                            ? SpinKitRing(
+                                color: Colors.white,
+                                size: 20,
+                                lineWidth: 2,
+                              )
+                            : Container()
                       ],
                     ),
                   ),
@@ -152,42 +169,46 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            _wrongPassword? Container(
-              margin: EdgeInsets.only(top: 25),
-              child: InkWell(
-                onTap: ()=>_resetPassword(),
-                  child: Text("Forgot Password?",style: TextStyle(fontWeight: FontWeight.bold),)),
-            ):Container(),
+            _wrongPassword
+                ? Container(
+                    margin: EdgeInsets.only(top: 25),
+                    child: InkWell(
+                        onTap: () => _resetPassword(),
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                  )
+                : Container(),
           ],
         ),
       ),
     );
   }
 
-  ///This method used for sign up
-  void _signUp() async{
+  /// call the AuthProvider's function for the login or register
+  void _signUp() async {
     final email = _emailController.text;
     final password = _passwordController.text;
-    if(email.isEmpty || password.isEmpty){
+    if (email.isEmpty || password.isEmpty) {
       setState(() {
         _error = "Email or Password cannot be empty";
       });
       return;
     }
-    if(!_loading){
+    if (!_loading) {
       setState(() {
         _loading = true;
         _error = null;
         _wrongPassword = false;
       });
 
-      try{
+      try {
         AuthProvider _auth = AuthProvider();
         await _auth.loginWithEmail(email, password);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context)=>HomePage()
-        ));
-      }catch(error){
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage()));
+      } catch (error) {
         String errorMessage;
         print("+++++++++++++");
         print(error.message);
@@ -211,7 +232,8 @@ class _LoginPageState extends State<LoginPage> {
             errorMessage = "User with this email has been disabled.";
             break;
           case "ERROR_TOO_MANY_REQUESTS":
-            errorMessage = "We have blocked all requests from this device due to unusual activity. Try again later.";
+            errorMessage =
+                "We have blocked all requests from this device due to unusual activity. Try again later.";
             break;
           case "ERROR_OPERATION_NOT_ALLOWED":
             errorMessage = "Signing in with Email and Password is not enabled.";
@@ -221,34 +243,41 @@ class _LoginPageState extends State<LoginPage> {
         }
         setState(() {
           _error = errorMessage;
-
         });
-      }finally{
+      } finally {
         setState(() {
           _loading = false;
         });
-    }
-
+      }
     }
   }
 
-  void _resetPassword()async {
+  /// call the AuthProvider's function for the reset user's password
+  void _resetPassword() async {
     final email = _emailController.text;
     AuthProvider authProvider = AuthProvider();
     await authProvider.resetPassword(email);
 
-    await showDialog(context: context,builder: (context)=>AlertDialog(
-      title: Text("Email Sent",textAlign: TextAlign.center,),
-      content: Text("We have sent a password reset email to $email"),
-      actions: <Widget>[
-        MaterialButton(
-          onPressed: (){
-            Navigator.pop(context);
-          },
-          child: Text("Okay!",style: TextStyle(color: Colors.pinkAccent),),
-        )
-      ],
-    ));
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(
+                "Email Sent",
+                textAlign: TextAlign.center,
+              ),
+              content: Text("We have sent a password reset email to $email"),
+              actions: <Widget>[
+                MaterialButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Okay!",
+                    style: TextStyle(color: Colors.pinkAccent),
+                  ),
+                )
+              ],
+            ));
     setState(() {
       _wrongPassword = false;
     });

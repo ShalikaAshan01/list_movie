@@ -7,11 +7,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:popcorn/controllers/auth_provider.dart';
-import 'package:popcorn/ui/MyInheritedWidget.dart';
+import 'package:popcorn/ui/my_inherited_widget.dart';
 import 'package:popcorn/ui/favourite_list.dart';
 import 'package:popcorn/ui/home_page.dart';
+import 'package:popcorn/ui/login_page.dart';
 import 'package:popcorn/ui/watched_list.dart';
 
+/// Provide a hidden notification drawer for the app
 class AppDrawer extends StatefulWidget {
   final Widget child;
   final PageName pageName;
@@ -43,7 +45,7 @@ class _AppDrawerState extends State<AppDrawer> {
     }
   }
 
-  ///This method will get firebase user's display name and profile picture
+  ///This method will get logged firebase user's display name and profile picture
   void _fetchUserData() async {
     AuthProvider authProvider = AuthProvider();
     final user = await authProvider.getUser();
@@ -67,7 +69,7 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  //This is page content
+  /// build the main widget(ui)
   Widget _body() {
     final size = MediaQuery.of(context).size;
     final width = size.width;
@@ -92,58 +94,63 @@ class _AppDrawerState extends State<AppDrawer> {
                 });
             }
           },
-          child: Material(
-              animationDuration: _duration,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(_collapsed ? 0 : 20)),
-              elevation: 10,
-              child: Column(
-                children: <Widget>[
-                  AnimatedContainer(
-                    duration: _duration,
-                    padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
-                    height: _collapsed ? height * 0.1 : (height * 0.07),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(_collapsed ? 0 : 20)),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: width * 0.04,
-                        ),
-                        InkWell(
-                            onTap: () {
-                              setState(() {
-                                _collapsed = !_collapsed;
-                              });
-                            },
-                            child: Icon(
-                              Icons.menu,
-                              size: width * 0.065,
-                              color: Colors.white70,
-                            )),
-                        Expanded(
-                          child: Text(
-                            widget.title,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: width * 0.05,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700),
+          child: AbsorbPointer(
+            absorbing: !_collapsed,
+            child: Material(
+                animationDuration: _duration,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(_collapsed ? 0 : 20)),
+                elevation: 10,
+                child: Column(
+                  children: <Widget>[
+                    AnimatedContainer(
+                      duration: _duration,
+                      width: double.infinity,
+                      padding: EdgeInsets.only(top: _collapsed ? 15 : 0),
+                      height: _collapsed ? height * 0.1 : (height * 0.07),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(_collapsed ? 0 : 20)),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Positioned(
+                            left: width * 0.04,
+                            child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _collapsed = !_collapsed;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.menu,
+                                  size: width * 0.065,
+                                  color: Colors.white70,
+                                )),
                           ),
-                        )
-                      ],
+                          Container(
+                            child: Text(
+                              widget.title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: width * 0.05,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(child: widget.child),
-                ],
-              )),
+                    Expanded(child: widget.child),
+                  ],
+                )),
+          ),
         ));
   }
 
-  /// This is menu items
+  /// Build the navigation drawer menu items
   Widget _menuItem() {
     var activeColor = Colors.black87;
     var deactiveColor = Colors.black54;
@@ -193,23 +200,24 @@ class _AppDrawerState extends State<AppDrawer> {
                 onTap: () => showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text("Hello there!"),
-                      content: Text("We used gravatar as the profile picture.Press okay to update the image"),
-                      actions: <Widget>[
-                        MaterialButton(
-                          onPressed: () {
-                            ImageCache imagecache = ImageCache();
-                            imagecache.clear();
-                            _fetchUserData();
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "Okay",
-                            style: TextStyle(color: Colors.pinkAccent),
-                          ),
-                        )
-                      ],
-                    )),
+                          title: Text("Hello there!"),
+                          content: Text(
+                              "We used gravatar as the profile picture.Press okay to update the image"),
+                          actions: <Widget>[
+                            MaterialButton(
+                              onPressed: () {
+                                ImageCache imagecache = ImageCache();
+                                imagecache.clear();
+                                _fetchUserData();
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                "Okay",
+                                style: TextStyle(color: Colors.pinkAccent),
+                              ),
+                            )
+                          ],
+                        )),
                 child: CircleAvatar(
                   backgroundImage: image,
                 ),
@@ -241,39 +249,29 @@ class _AppDrawerState extends State<AppDrawer> {
             height: 30,
           ),
           ListTile(
-            onTap: ()=>_navigate(PageName.home,HomePage()),
+            onTap: () => _navigate(PageName.home, HomePage()),
             title: Text(
               "Home",
               style: selectedHome ? activeText : deactiveText,
             ),
             leading: Icon(Icons.home,
-                color: selectedHome
-                    ? activeColor
-                    : deactiveColor),
+                color: selectedHome ? activeColor : deactiveColor),
           ),
           ListTile(
-            onTap: ()=>_navigate(PageName.watchList, watchedList()),
-            title: Text("Watch list",
-                style: selectedWatchList
-                    ? activeText
-                    : deactiveText),
+            onTap: () => _navigate(PageName.watchList, WatchedList()),
+            title: Text("Wishlist",
+                style: selectedWatchList ? activeText : deactiveText),
             leading: Icon(
               Icons.watch_later,
-              color: selectedWatchList
-                  ? activeColor
-                  : deactiveColor,
+              color: selectedWatchList ? activeColor : deactiveColor,
             ),
           ),
           ListTile(
-            onTap: ()=>_navigate(PageName.favourite,FavouriteList()),
+            onTap: () => _navigate(PageName.favourite, FavouriteList()),
             title: Text("Favorite",
-                style: selectedFavourite
-                    ? activeText
-                    : deactiveText),
+                style: selectedFavourite ? activeText : deactiveText),
             leading: Icon(Icons.favorite,
-                color: selectedFavourite
-                    ? activeColor
-                    : deactiveColor),
+                color: selectedFavourite ? activeColor : deactiveColor),
           ),
           ListTile(
             onTap: () => MyInheritedData.of(context).themeChange(!darkMode),
@@ -287,6 +285,12 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
           ListTile(
+            onTap: () async {
+              await AuthProvider().signOut();
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (Route<dynamic> route) => false);
+            },
             title: Text(
               "Signout",
               style: deactiveText,
@@ -301,57 +305,58 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
-  //This method is used for navigate to another page
-  void _navigate(PageName pageName,to) {
+  /// This method is used for navigate to another page
+  void _navigate(PageName pageName, to) {
     setState(() {
       _collapsed = true;
     });
 
-    if(widget.pageName != pageName){
+    if (widget.pageName != pageName) {
       //Navigate to page after animation finish
       Timer(_duration, () {
-        Navigator.push(context, MaterialPageRoute(
-            builder: (context)=>to
-        ));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => to));
       });
-
     }
   }
 
-  ///This method will used to edit users display name
+  /// This method will used to edit users display name
   Future _edit() async {
     await showDialog(
         context: context,
-        builder: (context) => StatefulBuilder(builder: (context,setState)=>AlertDialog(
-          title: Text("Edit Display Name"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                controller: _textEditingController,
-                decoration: InputDecoration(hintText: "Enter your name"),
+        builder: (context) => StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                title: Text("Edit Display Name"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextField(
+                      controller: _textEditingController,
+                      decoration: InputDecoration(hintText: "Enter your name"),
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  MaterialButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      setState(() {
+                        _collapsed = true;
+                      });
+                      AuthProvider _auth = AuthProvider();
+                      await _auth
+                          .updateDisplayName(_textEditingController.text);
+                      _fetchUserData();
+                    },
+                    child: Text(
+                      "Done",
+                      style: TextStyle(color: Colors.pinkAccent),
+                    ),
+                  )
+                ],
               ),
-            ],
-          ),
-          actions: <Widget>[
-            MaterialButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                setState(() {
-                  _collapsed = true;
-                });
-                AuthProvider _auth = AuthProvider();
-                await _auth.updateDisplayName(_textEditingController.text);
-                _fetchUserData();
-              },
-              child: Text(
-                "Done",
-                style: TextStyle(color: Colors.pinkAccent),
-              ),
-            )
-          ],
-        ),));
+            ));
   }
 }
+
 ///These are the pages available in app
 enum PageName { home, favourite, watchList }

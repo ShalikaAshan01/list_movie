@@ -1,21 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/ui/movie_lable.dart';
 import 'package:popcorn/utils/app_drawer.dart';
-import 'package:carousel_pro/carousel_pro.dart';
 import 'package:popcorn/controllers/watched_provider.dart';
-import 'package:popcorn/utils/loading_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
-class watchedList extends StatefulWidget {
+/// This entry point is used for the user interface of the watch list page
+class WatchedList extends StatefulWidget {
   @override
-  _watchedListState createState() => _watchedListState();
+  _WatchedListState createState() => _WatchedListState();
 }
 
-class _watchedListState extends State<watchedList> {
+class _WatchedListState extends State<WatchedList> {
   WatchedProvider _watchedProvider = WatchedProvider();
   Future watchedMovieList;
+  bool _loading = true;
+  String _userId;
 
+  /// Accessing the remove movie method from the watch list
   deleteLable(movieId) {
     _watchedProvider.removeWatchedMovies(movieId);
     setState(() {
@@ -24,110 +28,159 @@ class _watchedListState extends State<watchedList> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getUserID();
+  }
+
+  @override
   Widget build(BuildContext context) {
     this.watchedMovieList = _watchedProvider.getWatchedMovies();
 
     return AppDrawer(
         pageName: PageName.watchList,
-        child: Column(children: <Widget>[
-//          Text(
-//            "Swap To remove Items",
-//            style: TextStyle(color: Colors.grey),
-//          ),
-          FutureBuilder(
-              future: watchedMovieList,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data.documents.length == 0) {
+        child: _loading
+            ? _skeletonWidget()
+            : StreamBuilder(
+                stream: _watchedProvider.getWatchedList(_userId),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) return _skeletonWidget();
                   return Expanded(
-                    child: Center(
-                        child: Text(
-                      "No Watched Movies",
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    )),
-                  );
-                }
+                    child: ListView.builder(
+                        padding: EdgeInsets.only(top: 0),
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (_, int index) {
+                          if (snapshot.data == null)
+                            return Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(Icons.local_movies),
+                                  Text(
+                                    "We cannot find any movies",
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                ],
+                              ),
+                            );
 
-                return Expanded(
-                  child: ListView.builder(
-                      padding: EdgeInsets.only(top: 0),
-                      itemCount: snapshot.data.documents.length,
-//                    physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (_, int index) {
-                        print(snapshot.data.documents[index]);
-                        final id = snapshot.data.documents[index]['id'];
-                        final name = snapshot.data.documents[index]['title'];
-                        final poster = snapshot.data.documents[index]['poster'];
-                        final vote = snapshot.data.documents[index]['vote'];
-                        final release =
-                            snapshot.data.documents[index]['release'];
-//                    print(snapshot.data.documents[index]['poster'].toString());
-                        return Dismissible(
-                          key: new Key(index.toString()),
-                          onDismissed: (direction) {
-                            _watchedProvider.removeWatchedMovies(id);
-                            Scaffold.of(context).showSnackBar(new SnackBar(
-                                content: Text(
-                                  "Movie $name Successfully Removed",
-                                  style: TextStyle(color: Colors.grey),
+                          final id = snapshot.data.documents[index]['movieId']
+                              .toString();
+                          final name = snapshot.data.documents[index]['title'];
+                          final poster =
+                              snapshot.data.documents[index]['poster'];
+                          final vote = snapshot.data.documents[index]['vote'];
+                          final release =
+                              snapshot.data.documents[index]['release'];
+
+                          return Dismissible(
+                            key: new Key(index.toString()),
+                            onDismissed: (direction) {
+                              setState(() {
+                                _deleteWatchedMovie(id);
+                              });
+
+                              Scaffold.of(context).showSnackBar(new SnackBar(
+                                  content: Text(
+                                    "Movie $name Successfully Removed",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  backgroundColor: Colors.grey[850]));
+                            },
+                            background: new Container(
+                              color: Colors.red,
+                              child: Center(
+                                child: Icon(
+                                  Icons.delete,
+                                  size: 50,
+                                  color: Colors.grey[200],
                                 ),
-                                backgroundColor: Colors.grey[850]));
-                          },
-                          background: new Container(
-                            color: Colors.red,
-                            child: Center(
-                              child: Icon(
-                                Icons.delete,
-                                size: 50,
-                                color: Colors.grey[200],
                               ),
                             ),
-                          ),
-                          child: MovieLabel(
-                              id: id,
-                              movieName: name,
-                              poster: poster,
-                              vote: vote,
-                              release: release,
-                              favOrWatched: false,
-                              delete: deleteLable),
-                        );
-//                    return Text(snapshot.data.documents[index]['poster'].toString()); //I just assumed that your ChatMessage class takes a parameter message text
-                      }),
-                );
-              }),
-//        StreamBuilder<QuerySnapshot>(
-//            stream: _watchedProvider.setMovieStream(),
-//            builder: (context, snapshot){
-//              print(snapshot.data.documents[0]['id']);
-//              if (!snapshot.hasData){
-//                return Text("No data");
-//              }else{
-//                return Expanded(
-////                height: 200,
-//                  child: ListView.builder(
-//                      itemCount: snapshot.data.documents.length,
-////                    physics: NeverScrollableScrollPhysics(),
-//                      itemBuilder: (_, int index) {
-//                        print(snapshot.data.documents[index]);
-//                      final id = snapshot.data.documents[index]['id'];
-//                      final name = snapshot.data.documents[index]['title'];
-//                      final poster = snapshot.data.documents[index]['poster'];
-//                      final vote = snapshot.data.documents[index]['vote'];
-//                      final release = snapshot.data.documents[index]['release'];
-////                    print(snapshot.data.documents[index]['poster'].toString());
-//                      return MovieLabel(id: id,movieName: name,poster: poster,vote: vote, release: release, favOrWatched: true, delete: deleteLable );
-//                        return Text('klkl'); //I just assumed that your ChatMessage class takes a parameter message text
-//                      }
-//                  ),
-//                );
-//              }
-//
-////              return Text("No kdata");
-//
-//
-//            }
-//        ),
-        ]));
+                            child: MovieLabel(
+                                id: id,
+                                movieName: name,
+                                poster: poster,
+                                vote: vote,
+                                release: release,
+                                favOrWatched: true),
+                          );
+                        }),
+                  );
+                },
+              ));
+  }
+
+  /// fetch logged user id from
+  Future _getUserID() async {
+    final user = await AuthProvider().getUser();
+    setState(() {
+      _userId = user.uid;
+      _loading = false;
+    });
+  }
+
+  // Provides a loading skeleton for the favourite list
+  Widget _skeletonWidget() {
+    final width = MediaQuery.of(context).size.width;
+
+    return ListView.builder(
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Container(
+            padding: EdgeInsets.all(8.0),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[400],
+              highlightColor: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 10,
+                          width: width * 0.7,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 10,
+                          width: width * 0.6,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ));
+      },
+    );
+  }
+
+  Future<void> _deleteWatchedMovie(String movieID) async {
+    await _watchedProvider.removeWatchedMovies(movieID);
   }
 }
