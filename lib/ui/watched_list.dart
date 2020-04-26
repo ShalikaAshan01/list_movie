@@ -46,69 +46,65 @@ class _WatchedListState extends State<WatchedList> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (!snapshot.hasData) return _skeletonWidget();
-                  return Expanded(
-                    child: ListView.builder(
-                        padding: EdgeInsets.only(top: 0),
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (_, int index) {
-                          if (snapshot.data == null)
-                            return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Icon(Icons.local_movies),
-                                  Text(
-                                    "We cannot find any movies",
-                                    style:
-                                        Theme.of(context).textTheme.headline6,
-                                  ),
-                                ],
-                              ),
-                            );
-
-                          final id = snapshot.data.documents[index]['movieId']
-                              .toString();
-                          final name = snapshot.data.documents[index]['title'];
-                          final poster =
-                              snapshot.data.documents[index]['poster'];
-                          final vote = snapshot.data.documents[index]['vote'];
-                          final release =
-                              snapshot.data.documents[index]['release'];
-
-                          return Dismissible(
-                            key: new Key(index.toString()),
-                            onDismissed: (direction) {
-                              setState(() {
-                                _deleteWatchedMovie(id);
-                              });
-
-                              Scaffold.of(context).showSnackBar(new SnackBar(
-                                  content: Text(
-                                    "Movie $name Successfully Removed",
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                  backgroundColor: Colors.grey[850]));
-                            },
-                            background: new Container(
-                              color: Colors.red,
-                              child: Center(
-                                child: Icon(
-                                  Icons.delete,
-                                  size: 50,
-                                  color: Colors.grey[200],
+                  return ListView.builder(
+                      padding: EdgeInsets.only(top: 0),
+                      itemCount: snapshot.data.documents.length,
+                      itemBuilder: (_, int index) {
+                        if (snapshot.data == null)
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(Icons.local_movies),
+                                Text(
+                                  "We cannot find any movies",
+                                  style:
+                                      Theme.of(context).textTheme.headline6,
                                 ),
+                              ],
+                            ),
+                          );
+
+                        final id = snapshot.data.documents[index]['movieId'].toString();
+                        final name = snapshot.data.documents[index]['title'];
+                        final poster =
+                            snapshot.data.documents[index]['poster'];
+                        final vote = snapshot.data.documents[index]['vote'];
+                        final release =
+                            snapshot.data.documents[index]['release'];
+                        return Dismissible(
+                          key: new ValueKey(id),
+                          onDismissed: (direction) {
+//                            setState(() {
+                              _deleteWatchedMovie(int.parse(id));
+//                            });
+
+                            Scaffold.of(context).showSnackBar(new SnackBar(
+                                content: Text(
+                                  "Movie $name Successfully Removed",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                backgroundColor: Colors.grey[850]));
+                          },
+                          background: new Container(
+                            color: Colors.red,
+                            child: Center(
+                              child: Icon(
+                                Icons.delete,
+                                size: 50,
+                                color: Colors.grey[200],
                               ),
                             ),
-                            child: MovieLabel(
-                                id: id,
-                                movieName: name,
-                                poster: poster,
-                                vote: vote,
-                                release: release,
-                                favOrWatched: true),
-                          );
-                        }),
-                  );
+                          ),
+                          child: MovieLabel(
+                              id: id,
+                              movieName: name,
+                              poster: poster,
+                              vote: vote,
+                              release: release,
+                              favOrWatched: true),
+                        );
+                      });
                 },
               ));
   }
@@ -180,7 +176,7 @@ class _WatchedListState extends State<WatchedList> {
     );
   }
 
-  Future<void> _deleteWatchedMovie(String movieID) async {
+  Future<void> _deleteWatchedMovie(int movieID) async {
     await _watchedProvider.removeWatchedMovies(movieID);
   }
 }

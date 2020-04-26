@@ -35,7 +35,7 @@ class WatchedProvider {
 
   /// Provides a method for removing movie from existing watch list
   removeWatchedMovies(movieID) async {
-    final user = await _auth.getUser().then((_user) =>
+    _auth.getUser().then((_user) =>
         _firestore
             .collection('user')
             .document(_user.uid)
@@ -43,6 +43,7 @@ class WatchedProvider {
             .where('movieId', isEqualTo: movieID)
             .getDocuments()
             .then((value) {
+              print(value.documents.length);
           if(value.documents.length != 0 ){
             if (value.documents.first.data["favourite"] == false ) {
               _firestore.runTransaction((transaction) async {
