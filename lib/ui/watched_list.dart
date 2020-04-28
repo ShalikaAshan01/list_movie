@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popcorn/controllers/auth_provider.dart';
 import 'package:popcorn/ui/movie_lable.dart';
 import 'package:popcorn/utils/app_drawer.dart';
@@ -14,9 +13,11 @@ class WatchedList extends StatefulWidget {
 }
 
 class _WatchedListState extends State<WatchedList> {
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
   WatchedProvider _watchedProvider = WatchedProvider();
   Future watchedMovieList;
   bool _loading = true;
+  bool isDeleting = false;
   String _userId;
 
   /// Accessing the remove movie method from the watch list
@@ -39,72 +40,88 @@ class _WatchedListState extends State<WatchedList> {
 
     return AppDrawer(
         pageName: PageName.watchList,
+        title: 'Watched List',
         child: _loading
             ? _skeletonWidget()
             : StreamBuilder(
                 stream: _watchedProvider.getWatchedList(_userId),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (!snapshot.hasData) return _skeletonWidget();
-                  return ListView.builder(
-                      padding: EdgeInsets.only(top: 0),
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (_, int index) {
-                        if (snapshot.data == null)
-                          return Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Icon(Icons.local_movies),
-                                Text(
-                                  "We cannot find any movies",
-                                  style:
-                                      Theme.of(context).textTheme.headline6,
-                                ),
-                              ],
-                            ),
-                          );
+                  if (!snapshot.hasData || snapshot.data.documents.length == 0)
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(Icons.local_movies),
+                          Text(
+                            "We cannot find any movies",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
+                    );
+                  return Stack(children: [
+                    ListView.builder(
+                        padding: EdgeInsets.only(top: 0),
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (_, int index) {
+                          if (snapshot.data == null)
+                            return Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(Icons.local_movies),
+                                  Text(
+                                    "We cannot find any movies",
+                                    style:
+                                        Theme.of(context).textTheme.headline6,
+                                  ),
+                                ],
+                              ),
+                            );
 
-                        final id = snapshot.data.documents[index]['movieId'].toString();
-                        final name = snapshot.data.documents[index]['title'];
-                        final poster =
-                            snapshot.data.documents[index]['poster'];
-                        final vote = snapshot.data.documents[index]['vote'];
-                        final release =
-                            snapshot.data.documents[index]['release'];
-                        return Dismissible(
-                          key: new ValueKey(id),
-                          onDismissed: (direction) {
+                          final id = snapshot.data.documents[index]['movieId']
+                              .toString();
+                          final name = snapshot.data.documents[index]['title'];
+                          final poster =
+                              snapshot.data.documents[index]['poster'];
+                          final vote = snapshot.data.documents[index]['vote'];
+                          final release =
+                              snapshot.data.documents[index]['release'];
+                          return Dismissible(
+                            key: new ValueKey(id),
+                            onDismissed: (direction) {
 //                            setState(() {
                               _deleteWatchedMovie(int.parse(id));
 //                            });
 
-                            Scaffold.of(context).showSnackBar(new SnackBar(
-                                content: Text(
-                                  "Movie $name Successfully Removed",
-                                  style: TextStyle(color: Colors.grey),
+                              Scaffold.of(context).showSnackBar(new SnackBar(
+                                  content: Text(
+                                    "Movie $name Successfully Removed",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  backgroundColor: Colors.grey[850]));
+                            },
+                            background: new Container(
+                              color: Colors.red,
+                              child: Center(
+                                child: Icon(
+                                  Icons.delete,
+                                  size: 50,
+                                  color: Colors.grey[200],
                                 ),
-                                backgroundColor: Colors.grey[850]));
-                          },
-                          background: new Container(
-                            color: Colors.red,
-                            child: Center(
-                              child: Icon(
-                                Icons.delete,
-                                size: 50,
-                                color: Colors.grey[200],
                               ),
                             ),
-                          ),
-                          child: MovieLabel(
-                              id: id,
-                              movieName: name,
-                              poster: poster,
-                              vote: vote,
-                              release: release,
-                              favOrWatched: true),
-                        );
-                      });
+                            child: MovieLabel(
+                                id: id,
+                                movieName: name,
+                                poster: poster,
+                                vote: vote,
+                                release: release,
+                                favOrWatched: true),
+                          );
+                        }),
+                  ]);
                 },
               ));
   }

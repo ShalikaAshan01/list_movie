@@ -35,17 +35,16 @@ class WatchedProvider {
 
   /// Provides a method for removing movie from existing watch list
   removeWatchedMovies(movieID) async {
-    _auth.getUser().then((_user) =>
-        _firestore
+    _auth.getUser().then((_user) => _firestore
             .collection('user')
             .document(_user.uid)
             .collection("Movies")
             .where('movieId', isEqualTo: movieID)
             .getDocuments()
             .then((value) {
-              print(value.documents.length);
-          if(value.documents.length != 0 ){
-            if (value.documents.first.data["favourite"] == false ) {
+          print(value.documents.length);
+          if (value.documents.length != 0) {
+            if (value.documents.first.data["favourite"] == false) {
               _firestore.runTransaction((transaction) async {
                 await transaction.delete(value.documents.first.reference);
                 print(movieID);
@@ -54,44 +53,14 @@ class WatchedProvider {
               _firestore.runTransaction((transaction) async => await transaction
                   .update(value.documents.first.reference, {'watched': false}));
             }
-          }else{
+          } else {
             print(value.documents.length);
             print(_user.uid);
             print(movieID);
           }
-        })
-    );
-
+        }));
+    return 0;
   }
-
-//  Future<void> removeWatched(movieID) async {
-//    final user = await _auth.getUser();
-//    final id = movieID;
-//    print(id);
-//    //run the firestore transaction
-//    _firestore.runTransaction((transaction) async {
-//      QuerySnapshot snapshot = await _firestore
-//          .collection("user")
-//          .document(user.uid)
-//          .collection("Movies")
-//          .where('movieId', isEqualTo: id)
-//          .getDocuments();
-//      // if movie is not in the firestore collection then add it.
-//      if (snapshot.documents.length == 0) {
-//        return;
-//      } else {
-//        final value = snapshot.documents.first;
-//        //if movie is favourite
-//        if (value.data["favourite"] == false || value.data["favourite"] == null) {
-//          value.reference.delete();
-//          return;
-//        } else {
-//          print("object");
-//          value.reference.updateData({"watched": false});
-//        }
-//      }
-//    });
-//  }
 
   /// Provides a method for get one time watch list for the logged user
   Future<QuerySnapshot> getWatchedMovies() {
@@ -121,13 +90,14 @@ class WatchedProvider {
 
     return snapshot;
   }
+
   ///Provides a method for set the stream for watched movie list
   setMovieStream() {
     this.getWatchedMovies2();
     return this.moviStream;
   }
 
-  /// Provides a realtime(stream) method for accessing specific user's favourite movie
+  /// Provides a realtime(stream) method for accessing specific user's WatchedList movie
   /// list
   Stream<QuerySnapshot> getWatchedList(String user) {
     return _firestore
@@ -137,5 +107,4 @@ class WatchedProvider {
         .where('watched', isEqualTo: true)
         .snapshots();
   }
-
 }

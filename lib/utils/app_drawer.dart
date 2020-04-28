@@ -259,7 +259,7 @@ class _AppDrawerState extends State<AppDrawer> {
           ),
           ListTile(
             onTap: () => _navigate(PageName.watchList, WatchedList()),
-            title: Text("Wishlist",
+            title: Text("Watched List",
                 style: selectedWatchList ? activeText : deactiveText),
             leading: Icon(
               Icons.watch_later,

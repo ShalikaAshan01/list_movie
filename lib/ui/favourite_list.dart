@@ -44,6 +44,7 @@ class _FavouriteListState extends State<FavouriteList> {
       key: _scaffoldGlobalKey,
       body: AppDrawer(
         pageName: PageName.favourite,
+        title: "Favourite List",
         child: _loading
             ? _skeletonWidget()
             : StreamBuilder(
